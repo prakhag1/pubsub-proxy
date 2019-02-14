@@ -24,7 +24,7 @@ spec:
     targetPort: 8080
   selector:
     app: "pubsub-proxy"
-  type: "NodePort"
+  type: "NodePort" 
 ---
 apiVersion: "extensions/v1beta1"
 kind: "Deployment"
