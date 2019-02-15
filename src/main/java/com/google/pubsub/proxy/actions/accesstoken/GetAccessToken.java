@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.POST;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -36,7 +36,7 @@ public class GetAccessToken {
 	 * @param hh
 	 * @return
 	 */
-	@POST
+	@GET
 	@ValidateEndClient
 	public Response doPost(@Context HttpHeaders hh) throws Exception {
 
