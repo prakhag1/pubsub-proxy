@@ -47,7 +47,8 @@ public class ValidateEndClientImpl implements ContainerRequestFilter {
 	 */
 	private boolean isTokenBasedAuthentication(String authorizationHeader) throws ClientMismatchException {
 		return authorizationHeader != null
-				&& authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_SCHEME_BASIC.toLowerCase() + " ");
+				&& authorizationHeader.toLowerCase()
+				.startsWith(AUTHENTICATION_SCHEME_BASIC.toLowerCase() + " ");
 	}
 
 	/**

@@ -60,13 +60,12 @@ public class PublishMessage {
 	public Response doPost(Request req) throws Exception {
 
 		// Check for missing fields which are mandatory
-		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty())
+		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty()) {
 			throw new MissingRequiredFieldsException();
-
+		}
 		try {
 			// Get publisher
 			Publisher publisher = getPublisher(req.getTopic());
-
 			// Publish message
 			for (final Message msg : req.getMessages()) {
 				publishMessage(publisher, msg);
@@ -79,7 +78,6 @@ public class PublishMessage {
 		// waiting for what happens downstream. Failed messages are captured in a BQ
 		// sink for a postmortem
 		return Response.ok().build();
-
 	}
 
 	/**
@@ -90,7 +88,6 @@ public class PublishMessage {
 	 * @throws InterruptedException
 	 */
 	private void publishMessage(Publisher publisher, Message msg) throws GenericAPIException {
-
 		Builder builder = PubsubMessage.newBuilder();
 
 		if (null != msg.getData()) {
@@ -112,7 +109,6 @@ public class PublishMessage {
 		// Async call to PubSub
 		ApiFuture<String> future = publisher.publish(builder.build());
 		ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
-
 			// Failed to publish messages downstream
 			public void onFailure(Throwable throwable) {
 				// Write failed msgs to a sink: BQ in this case
@@ -122,7 +118,6 @@ public class PublishMessage {
 					PublishMessageUtils.insertFailedMessagesInBQ(msg, apiException, ctx);
 				}
 			}
-
 			// Successfully published messages downstream
 			public void onSuccess(String msgId) {
 				LOGGER.info("Successfully published: " + msgId);
@@ -149,7 +144,9 @@ public class PublishMessage {
 					LOGGER.info("Creating new publisher for: " + topic);
 					// Create new publisher
 					try {
-						Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
+						Publisher publisher = Publisher.newBuilder(
+								ProjectTopicName.of(projectId, topic))
+								.build();
 						// Save publisher for later use
 						publishers.put(topic, publisher);
 						return publisher;

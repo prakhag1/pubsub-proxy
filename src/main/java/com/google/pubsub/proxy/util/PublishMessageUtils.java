@@ -59,9 +59,11 @@ public class PublishMessageUtils {
 	 * developers to revisit the failed messages, dissect failures and, if they
 	 * want, retry messages.
 	 * 
-	 * ------------------- Table schema ---------------------------- Data: data
-	 * passed in user request HttpCode: Failure code returned by PubSub StatusMsg:
-	 * Failure message TimeStamp: Timestamp recorded at the time of record entry
+	 * ------------------- Table schema ---------------------------- 
+	 * Data: data passed in user request 
+	 * HttpCode: Failure code returned by PubSub 
+	 * StatusMsg:Failure message 
+	 * TimeStamp: Timestamp recorded at the time of record entry
 	 * -------------------------------------------------------------
 	 * 
 	 * @param apiException

@@ -7,7 +7,6 @@ import javax.ws.rs.core.Response.Status;
 
 @Path("/")
 public class HealthCheck {
-
 	/**
 	 * Health check end-point. Returns a 200OK.
 	 */
