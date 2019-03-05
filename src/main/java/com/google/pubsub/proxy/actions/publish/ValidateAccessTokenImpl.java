@@ -26,12 +26,9 @@ import io.jsonwebtoken.Jwts;
 @ValidateAccessToken
 @Priority(Priorities.AUTHENTICATION)
 public class ValidateAccessTokenImpl implements ContainerRequestFilter {
-
 	@Context
 	ServletContext ctx;
-
 	private static final String AUTHENTICATION_SCHEME_BEARER = "Bearer";
-
 	/**
 	 * Extract the Bearer token and do cross validation/verification. A symmetric
 	 * key is used to sign the JWT token. Further control on access token (expiry
@@ -39,10 +36,9 @@ public class ValidateAccessTokenImpl implements ContainerRequestFilter {
 	 */
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		try {
-
-			String token = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)
+			String token = requestContext
+					.getHeaderString(HttpHeaders.AUTHORIZATION)
 					.substring(AUTHENTICATION_SCHEME_BEARER.length()).trim();
-
 			// Get service account handler from servletcontext
 			ServiceAccountCredentials serviceAccount = (ServiceAccountCredentials) ctx.getAttribute("serviceaccount");
 			Jwts.parser().setSigningKey(serviceAccount.getPrivateKey()).parseClaimsJws(token);

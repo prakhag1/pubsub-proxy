@@ -13,11 +13,8 @@ import com.google.pubsub.proxy.util.InjectResourcesUtils;
  * InjectResourcesUtils for details
  */
 public class WebServer {
-
 	public static void main(String[] args) throws Exception {
-
 		ServletContextHandler contextHandler = new ServletContextHandler();
-
 		// Inject all resources & providers here
 		ServletHolder servletHolder = new ServletHolder(new ServletContainer(InjectResourcesUtils.injectResources()));
 		contextHandler.addServlet(servletHolder, "/*");

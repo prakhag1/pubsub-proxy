@@ -13,7 +13,6 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 public class AccessTokenAuthException extends IOException implements ExceptionMapper<AccessTokenAuthException> {
-
 	private static final long serialVersionUID = 1L;
 
 	public AccessTokenAuthException() {

@@ -21,15 +21,12 @@ import com.google.pubsub.proxy.exceptions.GenericAPIException;
  * Utils to assist methods in /publish endpoint
  */
 public class PublishMessageUtils {
-
 	private final static String bigqueryInstance = "bigquery";
 	private final static String data = "Data";
 	private final static String timestamp = "TimeStamp";
 	private final static String code = "HttpCode";
 	private final static String statusmsg = "StatusMsg";
-
 	/**
-	 * 
 	 * @param s
 	 * @return
 	 * @throws GenericAPIException
@@ -70,7 +67,6 @@ public class PublishMessageUtils {
 	 * @param apiException
 	 */
 	public static void insertFailedMessagesInBQ(Message msg, ApiException apiException, ServletContext ctx) {
-
 		// Read init variables from context and config
 		String dataset = ProxyPropertiesUtils.getPropertyValue("dataset");
 		String table = ProxyPropertiesUtils.getPropertyValue("table");

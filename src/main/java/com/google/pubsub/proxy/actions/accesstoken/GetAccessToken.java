@@ -25,10 +25,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
  */
 @Path("/getaccesstoken")
 public class GetAccessToken {
-
 	@Context
 	ServletContext ctx;
-
 	/**
 	 * The primary thing of interest here is the client_id coming under
 	 * Authorization header. If it matches with what's provided in proxy.properties
@@ -54,7 +52,6 @@ public class GetAccessToken {
 	 * @throws Exception
 	 */
 	private String issueToken(String header) throws Exception {
-
 		// Get service account handler from servletcontext
 		ServiceAccountCredentials serviceAccount = (ServiceAccountCredentials) ctx.getAttribute("serviceaccount");
 		JwtBuilder jwts = Jwts.builder();
@@ -75,7 +72,6 @@ public class GetAccessToken {
 
 		// Sign with key
 		jwts.signWith(SignatureAlgorithm.RS256, serviceAccount.getPrivateKey());
-
 		return jwts.compact();
 	}
 }

@@ -32,7 +32,6 @@ import com.google.pubsub.proxy.util.ProxyPropertiesUtils;
  * here & save in servletcontext for later retreival
  */
 public class ServletInit implements ServletContextListener {
-
 	private static final Logger LOGGER = Logger.getLogger(ServletInit.class.getName());
 
 	/**

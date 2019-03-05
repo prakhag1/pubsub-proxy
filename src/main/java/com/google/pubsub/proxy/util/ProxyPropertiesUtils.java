@@ -9,19 +9,16 @@ import java.util.logging.Logger;
  * failed message sink etc.
  */
 public class ProxyPropertiesUtils {
-
 	private static Properties prop;
 	private static final Logger logger = Logger.getLogger(ProxyPropertiesUtils.class.getName());
-
+	
 	static {
 		InputStream is = null;
 		try {
-
 			prop = new Properties();
 			is = ProxyPropertiesUtils.class.getResourceAsStream("/proxy.properties");
 			prop.load(is);
 			is.close();
-
 		} catch (Exception e) {
 			logger.severe(e.getMessage());
 		}

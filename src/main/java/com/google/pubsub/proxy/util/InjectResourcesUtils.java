@@ -17,11 +17,9 @@ import com.google.pubsub.proxy.server.HealthCheck;
  * All custom resources to be injected in servlet container find a place here
  */
 public class InjectResourcesUtils {
-
 	public static ResourceConfig injectResources() {
-
 		ResourceConfig resourceConfig = new ResourceConfig();
-
+		
 		// End-point resources
 		resourceConfig.register(new PublishMessage());
 		resourceConfig.register(new GetAccessToken());

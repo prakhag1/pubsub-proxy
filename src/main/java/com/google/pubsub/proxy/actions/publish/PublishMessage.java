@@ -141,7 +141,6 @@ public class PublishMessage {
 	 * @throws Exception
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
-
 		// Check if publisher against a topic already exists
 		if (!publishers.containsKey(topic)) {
 			// Double checked locking to prevent any race conditions on publisher creation
@@ -153,9 +152,7 @@ public class PublishMessage {
 						Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
 						// Save publisher for later use
 						publishers.put(topic, publisher);
-						
 						return publisher;
-
 					} catch (IOException e) {
 						LOGGER.severe("Cannot create publisher: " + e.getMessage());
 						throw e;
@@ -163,7 +160,6 @@ public class PublishMessage {
 				}
 			}
 		}
-
 		return publishers.get(topic);
 	}
 }
