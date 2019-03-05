@@ -14,32 +14,32 @@ import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
 import com.google.pubsub.proxy.server.HealthCheck;
 
 /**
- * All custom resources to be injected in servlet container find a place here 
+ * All custom resources to be injected in servlet container find a place here
  */
 public class InjectResourcesUtils {
-		
+
 	public static ResourceConfig injectResources() {
-		
+
 		ResourceConfig resourceConfig = new ResourceConfig();
-		
-		//End-point resources
+
+		// End-point resources
 		resourceConfig.register(new PublishMessage());
 		resourceConfig.register(new GetAccessToken());
 		resourceConfig.register(new HealthCheck());
-		
-		//Providers
+
+		// Providers
 		resourceConfig.register(new ValidateAccessTokenImpl());
 		resourceConfig.register(new ValidateEndClientImpl());
-		
-		//Jackson - json to POJO
+
+		// Jackson - json to POJO
 		resourceConfig.register(JacksonFeature.class);
-		
-		//Custom exception classes written as providers
+
+		// Custom exception classes written as providers
 		resourceConfig.register(new ClientMismatchException());
 		resourceConfig.register(new AccessTokenAuthException());
 		resourceConfig.register(new MissingRequiredFieldsException());
 		resourceConfig.register(new GenericAPIException());
-		
+
 		return resourceConfig;
 	}
 }

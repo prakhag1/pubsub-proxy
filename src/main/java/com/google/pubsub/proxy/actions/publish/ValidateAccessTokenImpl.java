@@ -29,20 +29,18 @@ public class ValidateAccessTokenImpl implements ContainerRequestFilter {
 
 	@Context
 	ServletContext ctx;
-	
+
 	private static final String AUTHENTICATION_SCHEME_BEARER = "Bearer";
 
 	/**
-	 * Extract the Bearer token and do cross validation/verification. 
-	 * A symmetric key is used to sign the JWT token. 
-	 * Further control on access token (expiry etc) can be set via config parameters in proxy.properties
+	 * Extract the Bearer token and do cross validation/verification. A symmetric
+	 * key is used to sign the JWT token. Further control on access token (expiry
+	 * etc) can be set via config parameters in proxy.properties
 	 */
 	public void filter(ContainerRequestContext requestContext) throws IOException {
-
 		try {
 
-			String token = requestContext
-					.getHeaderString(HttpHeaders.AUTHORIZATION)
+			String token = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)
 					.substring(AUTHENTICATION_SCHEME_BEARER.length()).trim();
 
 			// Get service account handler from servletcontext
@@ -50,7 +48,6 @@ public class ValidateAccessTokenImpl implements ContainerRequestFilter {
 			Jwts.parser().setSigningKey(serviceAccount.getPrivateKey()).parseClaimsJws(token);
 
 		} catch (Exception e) {
-
 			if (!(e instanceof NoSuchAlgorithmException)) {
 				throw new AccessTokenAuthException();
 			}
