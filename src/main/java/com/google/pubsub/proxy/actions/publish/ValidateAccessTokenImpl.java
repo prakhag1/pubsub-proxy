@@ -31,9 +31,6 @@ import com.google.pubsub.proxy.exceptions.AccessTokenAuthException;
 
 import io.jsonwebtoken.Jwts;
 
-/**
- * This class intercepts requests to /publish to carry out JWT auth checks
- */
 @Provider
 @ValidateAccessToken
 @Priority(Priorities.AUTHENTICATION)
