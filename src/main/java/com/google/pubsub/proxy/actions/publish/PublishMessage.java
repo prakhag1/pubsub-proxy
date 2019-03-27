@@ -112,7 +112,6 @@ public class PublishMessage {
 	 * @throws Exception
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
-		// Check if publisher against a topic already exists
 		if (!publishers.containsKey(topic)) {
 			// Double checked locking to prevent any race condition
 			synchronized (PublishMessage.class) {
