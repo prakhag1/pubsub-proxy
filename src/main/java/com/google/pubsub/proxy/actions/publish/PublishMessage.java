@@ -54,6 +54,7 @@ public class PublishMessage {
 	private HashMap<String, Publisher> publishers = new HashMap<String, Publisher>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
+	
 	/**
 	 * Post authentication, pass through the request to Google Cloud PubSub Request
 	 * data is captured in Request POJO. For the passed message format look at
@@ -81,8 +82,8 @@ public class PublishMessage {
 		}
 		return Response.ok().build();
 	}
+	
 	/**
-	 * 
 	 * @param publisher
 	 * @param msg
 	 * @throws GenericAPIException
@@ -116,6 +117,7 @@ public class PublishMessage {
 
 		}, MoreExecutors.directExecutor());
 	}
+	
 	/**
 	 * A long living publisher object created since 
 	 * creating a new publisher on each request
