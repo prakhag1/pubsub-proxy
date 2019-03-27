@@ -24,6 +24,7 @@ import com.google.pubsub.proxy.exceptions.GenericAPIException;
 public class PublishMessageUtils {
 	
 	/**
+	 * Returns timestamp from string
 	 * @param s
 	 * @return
 	 * @throws GenericAPIException
@@ -37,6 +38,8 @@ public class PublishMessageUtils {
 	}
 
 	/**
+	 * Attributes captured as generic object returned 
+	 * in the format understandable by PubSub
 	 * @param attributes
 	 * @return
 	 * @throws Exception
