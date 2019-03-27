@@ -12,6 +12,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License. */
 
+/*
+ * Exception thrown in case of an invalid access token 
+ */
 package com.google.pubsub.proxy.exceptions;
 
 import java.io.IOException;
@@ -22,9 +25,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-/**
- * Exception thrown in case of an invalid access token 
- */
 @Provider
 public class AccessTokenAuthException extends IOException implements ExceptionMapper<AccessTokenAuthException> {
 	private static final long serialVersionUID = 1L;

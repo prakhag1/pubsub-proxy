@@ -12,6 +12,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License. */
 
+/*
+ * Exception thrown in case mandatory fileds (i.e. topic and/or messages is missing) 
+ */
 package com.google.pubsub.proxy.exceptions;
 
 import javax.ws.rs.core.MediaType;
@@ -20,9 +23,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-/**
- * Exception thrown in case mandatory fileds (i.e. topic and/or messages is missing) 
- */
 @Provider
 public class MissingRequiredFieldsException extends Exception implements ExceptionMapper<MissingRequiredFieldsException>{
 

@@ -12,6 +12,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License. */
 
+/*
+ * Generic exception wrapped as http 500 response  
+ */
 package com.google.pubsub.proxy.exceptions;
 
 import javax.ws.rs.core.MediaType;
@@ -20,9 +23,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-/**
- * Generic exception wrapped as http 500 response  
- */
 @Provider
 public class GenericAPIException extends Exception implements ExceptionMapper<GenericAPIException>{
 
