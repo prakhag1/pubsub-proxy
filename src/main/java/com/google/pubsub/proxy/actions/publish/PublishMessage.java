@@ -1,3 +1,17 @@
+/* Copyright 2019 Google Inc. All rights reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License. */
+
 package com.google.pubsub.proxy.actions.publish;
 
 import java.io.IOException;
@@ -40,16 +54,15 @@ public class PublishMessage {
 	// See com.google.pubsub.proxy.server.ServletInit for more details
 	@Context
 	ServletContext ctx;
-	// Locally store topic-to-publisher handler
+	
 	private HashMap<String, Publisher> publishers = new HashMap<String, Publisher>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
 
 	/**
 	 * Post authentication, pass through the request to Google Cloud PubSub Request
-	 * data is captured in Request POJO. For the passed message format, please refer
+	 * data is captured in Request POJO. For the passed message format look at
 	 * com.google.pubsub.proxy.entities.Request
-	 * 
 	 * @param message
 	 * @return
 	 * @throws Exception
@@ -59,14 +72,11 @@ public class PublishMessage {
 	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
 
-		// Check for missing fields which are mandatory
 		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty()) {
 			throw new MissingRequiredFieldsException();
 		}
 		try {
-			// Get publisher
 			Publisher publisher = getPublisher(req.getTopic());
-			// Publish message
 			for (final Message msg : req.getMessages()) {
 				publishMessage(publisher, msg);
 			}
@@ -74,8 +84,6 @@ public class PublishMessage {
 		} catch (Exception ex) {
 			throw new GenericAPIException(ex);
 		}
-		// If no exception is caught, 200OK is returned to the client without
-		// waiting for what happens downstream
 		return Response.ok().build();
 	}
 
@@ -92,30 +100,24 @@ public class PublishMessage {
 		if (null != msg.getData()) {
 			builder.setData(ByteString.copyFromUtf8(msg.getData()));
 		}
-
 		if (null != msg.getMessageId()) {
 			builder.setMessageId(msg.getMessageId());
 		}
-
 		if (null != msg.getPublishTime()) {
 			builder.setPublishTime(PublishMessageUtils.getTimeStamp(msg.getPublishTime()));
 		}
-
 		if (null != msg.getAttributes()) {
 			builder.putAllAttributes(PublishMessageUtils.getAllAttributes(msg.getAttributes()));
 		}
-
-		// Async call to PubSub
+		
 		ApiFuture<String> future = publisher.publish(builder.build());
 		ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
-			// Failed to publish messages downstream
 			public void onFailure(Throwable throwable) {
 				if (throwable instanceof ApiException) {
 					ApiException apiException = ((ApiException) throwable);
 					LOGGER.severe("Failed to publish message: " + apiException.getMessage());
 				}
 			}
-			// Successfully published messages downstream
 			public void onSuccess(String msgId) {
 				LOGGER.info("Successfully published: " + msgId);
 			}
@@ -124,10 +126,10 @@ public class PublishMessage {
 	}
 
 	/**
-	 * A long living publisher object needed. Creating new publisher on each request
-	 * would be extremely expensive resulting in performance degradation and
-	 * resource overhead
-	 * 
+	 * A long living publisher object created since 
+	 * creating a new publisher on each request
+	 * would be extremely expensive resulting in 
+	 * performance degradation and resource overhead
 	 * @param topic
 	 * @return
 	 * @throws Exception
@@ -141,9 +143,7 @@ public class PublishMessage {
 					LOGGER.info("Creating new publisher for: " + topic);
 					// Create new publisher
 					try {
-						Publisher publisher = Publisher.newBuilder(
-								ProjectTopicName.of(projectId, topic))
-								.build();
+						Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
 						// Save publisher for later use
 						publishers.put(topic, publisher);
 						return publisher;

@@ -1,3 +1,17 @@
+/* Copyright 2019 Google Inc. All rights reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License. */
+
 package com.google.pubsub.proxy.server;
 
 import java.io.FileInputStream;
@@ -20,21 +34,12 @@ public class ServletInit implements ServletContextListener {
 	private static final Logger LOGGER = Logger.getLogger(ServletInit.class.getName());
 
 	/**
-	 * On server startup, do the following:
-	 * 
-	 * 1) Fetch and save service account in servlet context 2) Get a bigquery
-	 * instance and save it in the servletcontext -> This would be used later on to
-	 * write failed messages to bq 3) Check if the dataset for bq sink already
-	 * exists. If not, then create it 4) Check if the table for bq sink already
-	 * exists. if not, then create it
+	 * On server startup fetch and save service account in servlet context 
 	 */
 	public void contextInitialized(ServletContextEvent event) {
 		try {
-			// Read service account json from k8s secret
-			InputStream credsStream = new FileInputStream(/*System.getenv("GOOGLE_APPLICATION_CREDENTIALS")*/"/Users/prakhargautam/Downloads/sa.json");
+			InputStream credsStream = new FileInputStream(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
 			ServiceAccountCredentials serviceAccount = ServiceAccountCredentials.fromStream(credsStream);
-
-			// Setservice account in context for later use
 			event.getServletContext().setAttribute("serviceaccount", serviceAccount);
 		} 
 		catch (IOException | BigQueryException e) {
