@@ -56,14 +56,6 @@ public class PublishMessage {
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
 	
-	/**
-	 * Post authentication, pass through the request to Google Cloud PubSub Request
-	 * data is captured in Request POJO. For the passed message format look at
-	 * com.google.pubsub.proxy.entities.Request
-	 * @param message
-	 * @return
-	 * @throws Exception
-	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ValidateAccessToken
@@ -84,12 +76,6 @@ public class PublishMessage {
 		return Response.ok().build();
 	}
 	
-	/**
-	 * @param publisher
-	 * @param msg
-	 * @throws GenericAPIException
-	 * @throws InterruptedException
-	 */
 	private void publishMessage(Publisher publisher, Message msg) throws GenericAPIException {
 		Builder builder = PubsubMessage.newBuilder();
 		if (null != msg.getData()) {
