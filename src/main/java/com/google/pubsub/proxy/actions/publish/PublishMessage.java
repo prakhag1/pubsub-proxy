@@ -75,8 +75,7 @@ public class PublishMessage {
 			throw new GenericAPIException(ex);
 		}
 		// If no exception is caught, 200OK is returned to the client without
-		// waiting for what happens downstream. Failed messages are captured in a BQ
-		// sink for a postmortem
+		// waiting for what happens downstream
 		return Response.ok().build();
 	}
 
@@ -111,11 +110,9 @@ public class PublishMessage {
 		ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
 			// Failed to publish messages downstream
 			public void onFailure(Throwable throwable) {
-				// Write failed msgs to a sink: BQ in this case
 				if (throwable instanceof ApiException) {
 					ApiException apiException = ((ApiException) throwable);
 					LOGGER.severe("Failed to publish message: " + apiException.getMessage());
-					PublishMessageUtils.insertFailedMessagesInBQ(msg, apiException, ctx);
 				}
 			}
 			// Successfully published messages downstream
