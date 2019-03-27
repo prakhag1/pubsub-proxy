@@ -125,8 +125,8 @@ public class PublishMessage {
 		if (!publishers.containsKey(topic)) {
 			synchronized (PublishMessage.class) {
 				if (!publishers.containsKey(topic)) {
-					LOGGER.info("Creating new publisher for: " + topic);
 					try {
+						LOGGER.info("Creating new publisher for: " + topic);
 						Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
 						publishers.put(topic, publisher);
 						return publisher;
