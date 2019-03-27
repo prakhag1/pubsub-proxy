@@ -43,10 +43,6 @@ import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PubsubMessage.Builder;
 
-/**
- * Post validation, this class is used to forward 
- * request downstream to Google Cloud PubSub
- */
 @Path("/publish")
 public class PublishMessage {
 	
@@ -90,6 +86,7 @@ public class PublishMessage {
 		if (null != msg.getAttributes()) {
 			builder.putAllAttributes(PublishMessageUtils.getAllAttributes(msg.getAttributes()));
 		}
+		
 		ApiFuture<String> future = publisher.publish(builder.build());
 		ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
 			public void onFailure(Throwable throwable) {
