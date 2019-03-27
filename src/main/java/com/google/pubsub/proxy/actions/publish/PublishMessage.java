@@ -44,14 +44,11 @@ import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PubsubMessage.Builder;
 
 /**
- * Post validation, this class is used to forward request downstream to Google
- * Cloud PubSub
+ * Post validation, this class is used to forward 
+ * request downstream to Google Cloud PubSub
  */
 @Path("/publish")
 public class PublishMessage {
-
-	// Carries all variables initialized during server init.
-	// See com.google.pubsub.proxy.server.ServletInit for more details
 	@Context
 	ServletContext ctx;
 	
