@@ -112,7 +112,6 @@ public class PublishMessage {
 			public void onSuccess(String msgId) {
 				LOGGER.info("Successfully published: " + msgId);
 			}
-
 		}, MoreExecutors.directExecutor());
 	}
 	
