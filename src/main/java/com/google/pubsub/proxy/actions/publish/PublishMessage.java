@@ -68,7 +68,6 @@ public class PublishMessage {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
-
 		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty()) {
 			throw new MissingRequiredFieldsException();
 		}
@@ -77,7 +76,6 @@ public class PublishMessage {
 			for (final Message msg : req.getMessages()) {
 				publishMessage(publisher, msg);
 			}
-
 		} catch (Exception ex) {
 			throw new GenericAPIException(ex);
 		}
@@ -93,7 +91,6 @@ public class PublishMessage {
 	 */
 	private void publishMessage(Publisher publisher, Message msg) throws GenericAPIException {
 		Builder builder = PubsubMessage.newBuilder();
-
 		if (null != msg.getData()) {
 			builder.setData(ByteString.copyFromUtf8(msg.getData()));
 		}
@@ -106,7 +103,6 @@ public class PublishMessage {
 		if (null != msg.getAttributes()) {
 			builder.putAllAttributes(PublishMessageUtils.getAllAttributes(msg.getAttributes()));
 		}
-		
 		ApiFuture<String> future = publisher.publish(builder.build());
 		ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
 			public void onFailure(Throwable throwable) {
@@ -134,14 +130,12 @@ public class PublishMessage {
 	private Publisher getPublisher(String topic) throws IOException {
 		// Check if publisher against a topic already exists
 		if (!publishers.containsKey(topic)) {
-			// Double checked locking to prevent any race conditions on publisher creation
+			// Double checked locking to prevent any race condition
 			synchronized (PublishMessage.class) {
 				if (!publishers.containsKey(topic)) {
 					LOGGER.info("Creating new publisher for: " + topic);
-					// Create new publisher
 					try {
 						Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
-						// Save publisher for later use
 						publishers.put(topic, publisher);
 						return publisher;
 					} catch (IOException e) {
