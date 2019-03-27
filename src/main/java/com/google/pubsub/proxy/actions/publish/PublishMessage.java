@@ -118,7 +118,8 @@ public class PublishMessage {
 				if (!publishers.containsKey(topic)) {
 					LOGGER.info("Creating new publisher for: " + topic);
 					try {
-						Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
+						Publisher publisher = 
+								Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
 						publishers.put(topic, publisher);
 						return publisher;
 					} catch (IOException ex) {
