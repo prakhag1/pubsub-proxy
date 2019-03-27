@@ -49,6 +49,7 @@ import com.google.pubsub.v1.PubsubMessage.Builder;
  */
 @Path("/publish")
 public class PublishMessage {
+	
 	@Context
 	ServletContext ctx;
 	private HashMap<String, Publisher> publishers = new HashMap<String, Publisher>();
