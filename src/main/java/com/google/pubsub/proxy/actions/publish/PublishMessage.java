@@ -51,7 +51,6 @@ import com.google.pubsub.v1.PubsubMessage.Builder;
 public class PublishMessage {
 	@Context
 	ServletContext ctx;
-	
 	private HashMap<String, Publisher> publishers = new HashMap<String, Publisher>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
@@ -67,7 +66,9 @@ public class PublishMessage {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
-		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty()) {
+		if (null == req.getTopic() || 
+			null == req.getMessages() || 
+			req.getMessages().isEmpty()) {
 			throw new MissingRequiredFieldsException();
 		}
 		try {
@@ -136,9 +137,9 @@ public class PublishMessage {
 								ProjectTopicName.of(projectId, topic)).build();
 						publishers.put(topic, publisher);
 						return publisher;
-					} catch (IOException e) {
-						LOGGER.severe("Cannot create publisher: " + e.getMessage());
-						throw e;
+					} catch (IOException ex) {
+						LOGGER.severe("Cannot create publisher: " + ex.getMessage());
+						throw ex;
 					}
 				}
 			}
