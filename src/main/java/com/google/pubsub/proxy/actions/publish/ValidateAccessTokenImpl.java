@@ -39,12 +39,16 @@ public class ValidateAccessTokenImpl implements ContainerRequestFilter {
 	ServletContext ctx;
 	private static final String AUTHENTICATION_SCHEME_BEARER = "Bearer";
 	
+	/**
+	 * 1) Extracts bearer token from user request
+	 * 2) Validates JWT signature using service account from environment variable (set via k8s secret)
+	 * @param requestContext - user request
+	 */
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		try {
 			String token = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION).substring(AUTHENTICATION_SCHEME_BEARER.length()).trim();
 			ServiceAccountCredentials serviceAccount = (ServiceAccountCredentials) ctx.getAttribute("serviceaccount");
 			Jwts.parser().setSigningKey(serviceAccount.getPrivateKey()).parseClaimsJws(token);
-
 		} catch (Exception e) {
 			if (!(e instanceof NoSuchAlgorithmException)) {
 				throw new AccessTokenAuthException();

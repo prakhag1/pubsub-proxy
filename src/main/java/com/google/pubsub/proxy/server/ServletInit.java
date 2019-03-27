@@ -12,6 +12,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License. */
 
+/*
+ * DESCRIPTION
+ * 
+ * Called when the server starts/shuts down. 
+ * Any heavy lifting e.g: one time resource creation, handler initializations etc. 
+ * can be done here & be saved in servletcontext for later retreival 
+ */
 package com.google.pubsub.proxy.server;
 
 import java.io.FileInputStream;
@@ -25,11 +32,6 @@ import javax.servlet.ServletContextListener;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.bigquery.BigQueryException;
 
-/**
- * Called when either the server starts up or shuts down. Any heavy lifting
- * (e.g: one time resource creation, handler initializations etc.) can be done
- * here & save in servletcontext for later retreival
- */
 public class ServletInit implements ServletContextListener {
 	private static final Logger LOGGER = Logger.getLogger(ServletInit.class.getName());
 

@@ -52,6 +52,13 @@ public class PublishMessage {
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
 	
+	/**
+	 * Entry point for POST /publish
+	 * Enforces token validation 
+	 * @param req - POJO translated user request
+	 * @return
+	 * @throws Exception
+	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ValidateAccessToken
@@ -72,6 +79,13 @@ public class PublishMessage {
 		return Response.ok().build();
 	}
 	
+	/**
+	 * Populates PubSub publisher 
+	 * Publishes messages downstream 
+	 * @param publisher
+	 * @param msg 
+	 * @throws GenericAPIException
+	 */
 	private void publishMessage(Publisher publisher, Message msg) throws GenericAPIException {
 		Builder builder = PubsubMessage.newBuilder();
 		if (null != msg.getData()) {
@@ -103,17 +117,13 @@ public class PublishMessage {
 	}
 	
 	/**
-	 * A long living publisher object created since 
-	 * creating a new publisher on each request
-	 * would be extremely expensive resulting in 
-	 * performance degradation and resource overhead
+	 * Creates PubSub publisher if one doesn't exist
 	 * @param topic
 	 * @return
 	 * @throws Exception
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
 		if (!publishers.containsKey(topic)) {
-			// Double checked locking to prevent any race condition
 			synchronized (PublishMessage.class) {
 				if (!publishers.containsKey(topic)) {
 					LOGGER.info("Creating new publisher for: " + topic);

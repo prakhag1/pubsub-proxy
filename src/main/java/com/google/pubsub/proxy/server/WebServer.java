@@ -12,6 +12,14 @@
 * See the License for the specific language governing permissions and
 * limitations under the License. */
 
+/*
+ * DESCRIPTION
+ * 
+ * Embedded jetty with config:
+ * Port:8080 
+ * Resources: Endpoints (/health, /publish) 
+ * Providers: Validation filters and exceptions (refer InjectResourcesUtils for details)
+ */
 package com.google.pubsub.proxy.server;
 
 import org.eclipse.jetty.server.Server;
@@ -21,22 +29,14 @@ import org.glassfish.jersey.servlet.ServletContainer;
 
 import com.google.pubsub.proxy.util.InjectResourcesUtils;
 
-/**
- * Embedded jetty with config:
- *  Port:8080 
- *  Resources: Endpoints (/health, /publish) 
- *  Providers: Validation filters and exceptions (refer InjectResourcesUtils for details)
- */
 public class WebServer {
 	public static void main(String[] args) throws Exception {
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		
-		// Inject all resources & providers here
 		ServletHolder servletHolder = new ServletHolder(new ServletContainer(InjectResourcesUtils.injectResources()));
 		contextHandler.addServlet(servletHolder, "/*");
 		contextHandler.addEventListener(new ServletInit());
 
-		// Start server
 		Server server = new Server(8080);
 		server.setHandler(contextHandler);
 		server.start();
