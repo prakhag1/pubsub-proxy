@@ -37,6 +37,9 @@ public class MissingRequiredFieldsException extends Exception implements Excepti
     }
     
 	public Response toResponse(MissingRequiredFieldsException exception) {
-		return Response.status(Status.BAD_REQUEST).entity(exception.getMessage()).type(MediaType.APPLICATION_JSON).build();
+		return Response.status(Status.BAD_REQUEST)
+				.entity(exception.getMessage())
+				.type(MediaType.APPLICATION_JSON)
+				.build();
 	}
 }

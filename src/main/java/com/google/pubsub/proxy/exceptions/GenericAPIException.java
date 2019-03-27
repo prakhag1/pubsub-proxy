@@ -41,6 +41,9 @@ public class GenericAPIException extends Exception implements ExceptionMapper<Ge
     }
     
 	public Response toResponse(GenericAPIException exception) {
-		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exception.getMessage()).type(MediaType.APPLICATION_JSON).build();
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(exception.getMessage())
+				.type(MediaType.APPLICATION_JSON)
+				.build();
 	}
 }
