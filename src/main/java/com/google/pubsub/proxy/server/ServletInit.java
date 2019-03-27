@@ -13,8 +13,6 @@
 * limitations under the License. */
 
 /*
- * DESCRIPTION
- * 
  * Called when the server starts/shuts down. 
  * Any heavy lifting e.g: one time resource creation, handler initializations etc. 
  * can be done here & be saved in servletcontext for later retreival 
@@ -36,7 +34,8 @@ public class ServletInit implements ServletContextListener {
 	private static final Logger LOGGER = Logger.getLogger(ServletInit.class.getName());
 
 	/**
-	 * On server startup fetch and save service account in servlet context 
+	 * On startup save service account in servlet context 
+	 * @param event
 	 */
 	public void contextInitialized(ServletContextEvent event) {
 		try {

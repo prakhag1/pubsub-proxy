@@ -12,6 +12,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License. */
 
+/*
+ * All custom resources to be injected in 
+ * servlet container should be added here
+ */
 package com.google.pubsub.proxy.util;
 
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -24,10 +28,6 @@ import com.google.pubsub.proxy.exceptions.GenericAPIException;
 import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
 import com.google.pubsub.proxy.server.HealthCheck;
 
-/**
- * All custom resources to be injected in 
- * servlet container should be added here
- */
 public class InjectResourcesUtils {
 	public static ResourceConfig injectResources() {
 		ResourceConfig resourceConfig = new ResourceConfig();

@@ -21,9 +21,6 @@ import com.google.protobuf.Timestamp;
 import com.google.protobuf.util.Timestamps;
 import com.google.pubsub.proxy.exceptions.GenericAPIException;
 
-/**
- * Utils to assist methods in /publish endpoint
- */
 public class PublishMessageUtils {
 	
 	/**

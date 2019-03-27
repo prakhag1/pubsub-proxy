@@ -12,9 +12,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License. */
 
-/*
- * DESCRIPTION
- * 
+/* 
  * Embedded jetty with config:
  * Port:8080 
  * Resources: Endpoints (/health, /publish) 
