@@ -12,21 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License. 
 
-apiVersion: "v1"
-kind: "Service"
-metadata:
-  name: "pubsub-proxy"
-  namespace: "default"
-  labels:
-    app: "pubsub-proxy"
-spec:
-  ports:
-  - port: 8080
-    name: http
-  selector:
-    app: "pubsub-proxy"
-
----
 apiVersion: "extensions/v1beta1"
 kind: "Deployment"
 metadata:
@@ -60,58 +45,3 @@ spec:
           value: /var/secrets/google/key.json
         ports:
         - containerPort: 8080
----
-apiVersion: "autoscaling/v1"
-kind: "HorizontalPodAutoscaler"
-metadata:
-  name: "pubsub-proxy-hpa"
-  namespace: "default"
-  labels:
-    app: "pubsub-proxy"
-spec:
-  scaleTargetRef:
-    kind: "Deployment"
-    name: "pubsub-proxy"
-    apiVersion: "apps/v1beta1"
-  minReplicas: 1
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 70
-
----
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: pubsub-proxy-gateway
-spec:
-  selector:
-    istio: ingressgateway # use Istio default gateway implementation
-  servers:
-  - port:
-      number: 443
-      name: https
-      protocol: HTTPS
-    tls:
-      mode: SIMPLE
-      serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
-      privateKey: /etc/istio/ingressgateway-certs/tls.key
-    hosts:
-    - "*"
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: pubsub-proxy
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - pubsub-proxy-gateway
-  http:
-  - route:
-    - destination:
-        port:
-         number: 8080
-        host: pubsub-proxy
-    retries:
-      attempts: 3
-      perTryTimeout: 2s
