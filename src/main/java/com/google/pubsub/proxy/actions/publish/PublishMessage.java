@@ -53,13 +53,8 @@ public class PublishMessage {
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
 
 	@PostConstruct
-	public void init() {
-		 initializeClassMembers(new HashMap<>());
-	}
-
-	protected void initializeClassMembers(HashMap<String, Publisher> publishers) {
-		this.publishers = publishers;
-	}
+	public void init() { initializeClassMembers(new HashMap<>()); }
+	protected void initializeClassMembers(HashMap<String, Publisher> publishers) { this.publishers = publishers; }
 
 	/**
 	 * Entry point for POST /publish
@@ -72,9 +67,7 @@ public class PublishMessage {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
-		if (null == req.getTopic() || 
-			null == req.getMessages() || 
-			req.getMessages().isEmpty()) {
+		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty()) {
 			throw new MissingRequiredFieldsException();
 		}
 		try {
