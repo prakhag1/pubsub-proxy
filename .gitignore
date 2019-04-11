@@ -9,4 +9,5 @@
 ### Artifacts generated
 target/
 
-
+### Remove credentials file
+src/test/resources/credentials.json
