@@ -1,2 +1,10 @@
 .classpath
 .project
+
+### Removing Idea folders
+.idea
+.idea/**
+**/*.iml
+
+### Artifacts generated
+target/
