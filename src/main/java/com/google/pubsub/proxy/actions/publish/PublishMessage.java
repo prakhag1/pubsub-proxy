@@ -102,6 +102,7 @@ public class PublishMessage {
 		if (null != msg.getAttributes()) {
 			builder.putAllAttributes(PublishMessageUtils.getAllAttributes(msg.getAttributes()));
 		}
+		
 		ApiFuture<String> future = publisher.publish(builder.build());
 		ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
 			public void onFailure(Throwable throwable) {
