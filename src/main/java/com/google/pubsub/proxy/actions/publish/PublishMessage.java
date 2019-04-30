@@ -14,6 +14,18 @@
 
 package com.google.pubsub.proxy.actions.publish;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -31,30 +43,14 @@ import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PubsubMessage.Builder;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.logging.Logger;
-
 @Path("/publish")
 public class PublishMessage {
 	
 	@Context
 	ServletContext ctx;
-	private HashMap<String, Publisher> publishers;
+	private HashMap<String, Publisher> publishers = new HashMap<String, Publisher>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
-
-	@PostConstruct
-	public void init() { initializeClassMembers(new HashMap<>()); }
-	protected void initializeClassMembers(HashMap<String, Publisher> publishers) { this.publishers = publishers; }
 
 	/**
 	 * Entry point for POST /publish
@@ -67,7 +63,6 @@ public class PublishMessage {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
-		LOGGER.info("Inside doPost");
 		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty()) {
 			throw new MissingRequiredFieldsException();
 		}
@@ -90,7 +85,6 @@ public class PublishMessage {
 	 * @throws GenericAPIException
 	 */
 	private void publishMessage(Publisher publisher, Message msg) throws GenericAPIException {
-		LOGGER.info("Inside publishMessage");
 
 		Builder builder = PubsubMessage.newBuilder();
 		if (null != msg.getData()) {
@@ -127,8 +121,6 @@ public class PublishMessage {
 	 * @throws Exception
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
-		LOGGER.info("Inside getPublisher");
-
 		if (!publishers.containsKey(topic)) {
 			synchronized (PublishMessage.class) {
 				if (!publishers.containsKey(topic)) {
