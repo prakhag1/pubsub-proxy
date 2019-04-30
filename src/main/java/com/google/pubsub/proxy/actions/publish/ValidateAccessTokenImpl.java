@@ -16,6 +16,7 @@ package com.google.pubsub.proxy.actions.publish;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
 import javax.annotation.Priority;
 import javax.servlet.ServletContext;
@@ -38,6 +39,8 @@ public class ValidateAccessTokenImpl implements ContainerRequestFilter {
 	@Context
 	ServletContext ctx;
 	private static final String AUTHENTICATION_SCHEME_BEARER = "Bearer";
+	private static final Logger LOGGER = Logger.getLogger(ValidateAccessTokenImpl.class.getName());
+
 	
 	/**
 	 * 1) Extracts bearer token from user request
@@ -47,8 +50,10 @@ public class ValidateAccessTokenImpl implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		try {
 			String token = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION).substring(AUTHENTICATION_SCHEME_BEARER.length()).trim();
+			LOGGER.info("Token: "+ token);
 			ServiceAccountCredentials serviceAccount = (ServiceAccountCredentials) ctx.getAttribute("serviceaccount");
 			Jwts.parser().setSigningKey(serviceAccount.getPrivateKey()).parseClaimsJws(token);
+			LOGGER.info("matched token");
 		} catch (Exception e) {
 			if (!(e instanceof NoSuchAlgorithmException)) {
 				throw new AccessTokenAuthException();

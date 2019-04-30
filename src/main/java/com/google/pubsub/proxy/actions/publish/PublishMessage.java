@@ -67,6 +67,7 @@ public class PublishMessage {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
+		LOGGER.info("Inside doPost");
 		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty()) {
 			throw new MissingRequiredFieldsException();
 		}
@@ -89,6 +90,8 @@ public class PublishMessage {
 	 * @throws GenericAPIException
 	 */
 	private void publishMessage(Publisher publisher, Message msg) throws GenericAPIException {
+		LOGGER.info("Inside publishMessage");
+
 		Builder builder = PubsubMessage.newBuilder();
 		if (null != msg.getData()) {
 			builder.setData(ByteString.copyFromUtf8(msg.getData()));
@@ -124,6 +127,8 @@ public class PublishMessage {
 	 * @throws Exception
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
+		LOGGER.info("Inside getPublisher");
+
 		if (!publishers.containsKey(topic)) {
 			synchronized (PublishMessage.class) {
 				if (!publishers.containsKey(topic)) {
