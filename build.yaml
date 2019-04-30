@@ -17,7 +17,7 @@ steps:
   args: ['clone', 'https://github.com/prakhag1/pubsub-proxy']
 
 - name: 'gcr.io/cloud-builders/mvn'
-  args: ['clean', 'compile', 'assembly:assembly', 'package']
+  args: ['clean', 'compile', 'assembly:assembly', 'package', '-DskipTests=true']
   dir:  'pubsub-proxy'
 
 - name: 'gcr.io/cloud-builders/docker'
