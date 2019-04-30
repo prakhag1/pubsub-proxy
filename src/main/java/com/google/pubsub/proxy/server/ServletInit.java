@@ -40,7 +40,6 @@ public class ServletInit implements ServletContextListener {
 		try {
 			InputStream credsStream = new FileInputStream(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
 			ServiceAccountCredentials serviceAccount = ServiceAccountCredentials.fromStream(credsStream);
-			LOGGER.info("Got service account: "+serviceAccount.getPrivateKeyId());
 			event.getServletContext().setAttribute("serviceaccount", serviceAccount);
 		} 
 		catch (IOException e) {
