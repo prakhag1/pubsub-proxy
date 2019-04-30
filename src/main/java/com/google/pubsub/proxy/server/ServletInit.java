@@ -28,7 +28,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.google.auth.oauth2.ServiceAccountCredentials;
-import com.google.cloud.bigquery.BigQueryException;
 
 public class ServletInit implements ServletContextListener {
 	private static final Logger LOGGER = Logger.getLogger(ServletInit.class.getName());
@@ -43,7 +42,7 @@ public class ServletInit implements ServletContextListener {
 			ServiceAccountCredentials serviceAccount = ServiceAccountCredentials.fromStream(credsStream);
 			event.getServletContext().setAttribute("serviceaccount", serviceAccount);
 		} 
-		catch (IOException | BigQueryException e) {
+		catch (IOException e) {
 			LOGGER.severe("Init exception caught: " + e.getMessage());
 		}
 	}
