@@ -14,18 +14,6 @@
 
 package com.google.pubsub.proxy.actions.publish;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -42,6 +30,17 @@ import com.google.pubsub.proxy.util.PublishMessageUtils;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PubsubMessage.Builder;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.logging.Logger;
 
 @Path("/publish")
 public class PublishMessage {
@@ -137,5 +136,14 @@ public class PublishMessage {
 			}
 		}
 		return publishers.get(topic);
+	}
+
+
+	/**
+	 * Update the publishers with the provided object
+	 * @param publishers
+	 */
+	protected void setPublishers(HashMap<String, Publisher> publishers){
+		this.publishers = publishers;
 	}
 }

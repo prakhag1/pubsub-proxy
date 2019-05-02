@@ -77,7 +77,7 @@ public class PublishMessageUnitTest {
         message.setData(DATA);
         message.setPublishTime(PUBLISH_TIME);
         message.setAttributes(ATTRIBUTES);
-        //publishMessage.initializeClassMembers(publisherList);
+        publishMessage.setPublishers(publisherList);
 
     }
 

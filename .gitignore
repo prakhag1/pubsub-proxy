@@ -11,3 +11,6 @@ target/
 
 ### Remove credentials file
 src/test/resources/credentials.json
+
+**/.DS_Store
+
