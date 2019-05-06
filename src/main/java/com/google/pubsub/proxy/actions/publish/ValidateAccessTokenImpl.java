@@ -15,7 +15,6 @@
 package com.google.pubsub.proxy.actions.publish;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import javax.annotation.Priority;
 import javax.servlet.ServletContext;
@@ -51,9 +50,7 @@ public class ValidateAccessTokenImpl implements ContainerRequestFilter {
 			ServiceAccountCredentials serviceAccount = (ServiceAccountCredentials) ctx.getAttribute("serviceaccount");
 			Jwts.parser().setSigningKey(serviceAccount.getPrivateKey()).parseClaimsJws(token);
 		} catch (Exception e) {
-			if (!(e instanceof NoSuchAlgorithmException)) {
-				throw new AccessTokenAuthException();
-			}
+			throw new AccessTokenAuthException(e);
 		}
 	}
 }

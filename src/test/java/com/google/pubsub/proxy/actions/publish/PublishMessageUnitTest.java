@@ -1,15 +1,23 @@
 package com.google.pubsub.proxy.actions.publish;
 
-import com.google.api.core.ApiFuture;
-import com.google.api.gax.grpc.GrpcStatusCode;
-import com.google.api.gax.rpc.ApiExceptionFactory;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.pubsub.proxy.entities.Message;
-import com.google.pubsub.proxy.entities.Request;
-import com.google.pubsub.proxy.exceptions.GenericAPIException;
-import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
-import com.google.pubsub.v1.PubsubMessage;
-import io.grpc.Status;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,20 +28,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
+import com.google.api.core.ApiFuture;
+import com.google.api.gax.grpc.GrpcStatusCode;
+import com.google.api.gax.rpc.ApiExceptionFactory;
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.pubsub.proxy.entities.Message;
+import com.google.pubsub.proxy.entities.Request;
+import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
+import com.google.pubsub.v1.PubsubMessage;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
+import io.grpc.Status;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PublishMessageUnitTest {
@@ -44,7 +48,7 @@ public class PublishMessageUnitTest {
     private static final LinkedHashMap<String, String> ATTRIBUTES = new LinkedHashMap<>();
     private static final String PUBLISH_TIME = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     @Mock
-    HashMap<String, Publisher> publisherList;
+    ConcurrentHashMap<String, Publisher> publisherList;
     @Mock
     Publisher publisher;
     @Captor
@@ -171,25 +175,25 @@ public class PublishMessageUnitTest {
         verify(badFuture, times(1)).addListener(any(Runnable.class), any(Executor.class));
     }
 
-    @Test(expected = GenericAPIException.class)
+    @Test(expected = Exception.class)
     public void WhenMessageDataIsNullThenGenericApiExceptionIsThrown() throws Exception {
         message.setData(null);
         publishMessage.doPost(request);
     }
 
-    @Test(expected = GenericAPIException.class)
+    @Test(expected = Exception.class)
     public void WhenMessageIdIsNullThenGenericApiExceptionIsThrown() throws Exception {
         message.setMessageId(null);
         publishMessage.doPost(request);
     }
 
-    @Test(expected = GenericAPIException.class)
+    @Test(expected = Exception.class)
     public void WhenMessageAttributesAreNullThenGenericApiExceptionIsThrown() throws Exception {
         message.setAttributes(null);
         publishMessage.doPost(request);
     }
 
-    @Test(expected = GenericAPIException.class)
+    @Test(expected = Exception.class)
     public void WhenMessagePublishTimeIsNullThenGenericApiExceptionIsThrown() throws Exception {
         message.setPublishTime(null);
         publishMessage.doPost(request);

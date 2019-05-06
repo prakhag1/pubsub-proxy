@@ -24,7 +24,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import com.google.pubsub.proxy.actions.publish.PublishMessage;
 import com.google.pubsub.proxy.actions.publish.ValidateAccessTokenImpl;
 import com.google.pubsub.proxy.exceptions.AccessTokenAuthException;
-import com.google.pubsub.proxy.exceptions.GenericAPIException;
 import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
 import com.google.pubsub.proxy.server.HealthCheck;
 
@@ -45,7 +44,6 @@ public class InjectResourcesUtils {
 		// Custom exception classes written as providers
 		resourceConfig.register(new AccessTokenAuthException());
 		resourceConfig.register(new MissingRequiredFieldsException());
-		resourceConfig.register(new GenericAPIException());
 
 		return resourceConfig;
 	}
