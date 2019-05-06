@@ -69,7 +69,7 @@ public class PublishMessage {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	//@ValidateAccessToken
+	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
 
 		if (null == req.getTopic()) {
