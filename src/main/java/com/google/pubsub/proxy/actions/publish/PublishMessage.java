@@ -14,6 +14,18 @@
 
 package com.google.pubsub.proxy.actions.publish;
 
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -24,37 +36,34 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.proxy.entities.Message;
 import com.google.pubsub.proxy.entities.Request;
-import com.google.pubsub.proxy.exceptions.GenericAPIException;
 import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
 import com.google.pubsub.proxy.util.PublishMessageUtils;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PubsubMessage.Builder;
 
-import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.logging.Logger;
-
 @Path("/publish")
 public class PublishMessage {
-	
+
 	@Context
 	ServletContext ctx;
-	private HashMap<String, Publisher> publishers = new HashMap<String, Publisher>();
+	private ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<String, Publisher>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
 
 	/**
-	 * Entry point for POST /publish
-	 * Enforces token validation 
-	 * @param req - POJO translated user request
+	 * Update the publishers with the provided object
+	 * @param publishers
+	 */
+	void setPublishers(ConcurrentHashMap<String, Publisher> publishers) {
+		this.publishers = publishers;
+	}
+	
+	/**
+	 * Entry point for POST /publish Enforces token validation
+	 * 
+	 * @param req
+	 *            - POJO translated user request
 	 * @return
 	 * @throws Exception
 	 */
@@ -62,28 +71,36 @@ public class PublishMessage {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
-		if (null == req.getTopic() || null == req.getMessages() || req.getMessages().isEmpty()) {
-			throw new MissingRequiredFieldsException();
+
+		if (null == req.getTopic()) {
+			throw new MissingRequiredFieldsException("Pub/Sub topic required");
 		}
+		if (null == req.getMessages()) {
+			throw new MissingRequiredFieldsException("Message required");
+		}
+		if (req.getMessages().isEmpty()) {
+			throw new MissingRequiredFieldsException("Message cannot be empty");
+		}
+
 		try {
 			Publisher publisher = getPublisher(req.getTopic());
 			for (final Message msg : req.getMessages()) {
 				publishMessage(publisher, msg);
 			}
 		} catch (Exception ex) {
-			throw new GenericAPIException(ex);
+			throw ex;
 		}
 		return Response.ok().build();
 	}
-	
+
 	/**
-	 * Populates PubSub publisher 
-	 * Publishes messages downstream 
+	 * Populates PubSub publisher Publishes messages downstream
+	 * 
 	 * @param publisher
-	 * @param msg 
+	 * @param msg
 	 * @throws GenericAPIException
 	 */
-	private void publishMessage(Publisher publisher, Message msg) throws GenericAPIException {
+	private void publishMessage(Publisher publisher, Message msg) throws Exception {
 
 		Builder builder = PubsubMessage.newBuilder();
 		if (null != msg.getData()) {
@@ -98,7 +115,7 @@ public class PublishMessage {
 		if (null != msg.getAttributes()) {
 			builder.putAllAttributes(PublishMessageUtils.getAllAttributes(msg.getAttributes()));
 		}
-		
+
 		ApiFuture<String> future = publisher.publish(builder.build());
 		ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
 			public void onFailure(Throwable throwable) {
@@ -107,43 +124,27 @@ public class PublishMessage {
 					LOGGER.severe("Failed to publish message: " + apiException.getMessage());
 				}
 			}
+
 			public void onSuccess(String msgId) {
 				LOGGER.info("Successfully published: " + msgId);
 			}
 		}, MoreExecutors.directExecutor());
 	}
-	
+
 	/**
 	 * Creates PubSub publisher if one doesn't exist
+	 * 
 	 * @param topic
 	 * @return
 	 * @throws Exception
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
 		if (!publishers.containsKey(topic)) {
-			synchronized (PublishMessage.class) {
-				if (!publishers.containsKey(topic)) {
-					try {
-						LOGGER.info("Creating new publisher for: " + topic);
-						Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
-						publishers.put(topic, publisher);
-						return publisher;
-					} catch (IOException ex) {
-						LOGGER.severe("Cannot create publisher: " + ex.getMessage());
-						throw ex;
-					}
-				}
-			}
+			LOGGER.info("Creating new publisher for: " + topic);
+			Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
+			publishers.put(topic, publisher);
+			return publisher;
 		}
 		return publishers.get(topic);
-	}
-
-
-	/**
-	 * Update the publishers with the provided object
-	 * @param publishers
-	 */
-	protected void setPublishers(HashMap<String, Publisher> publishers){
-		this.publishers = publishers;
 	}
 }

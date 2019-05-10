@@ -37,6 +37,10 @@ public class AccessTokenAuthException extends IOException implements ExceptionMa
         super(string);
     }
     
+    public AccessTokenAuthException(Exception e) {
+        super(e);
+    }
+    
 	public Response toResponse(AccessTokenAuthException exception) {
 		return Response.status(Status.UNAUTHORIZED)
 				.entity(exception.getMessage())

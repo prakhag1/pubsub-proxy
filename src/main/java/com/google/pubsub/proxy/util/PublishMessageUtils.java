@@ -19,7 +19,6 @@ import java.util.Map;
 
 import com.google.protobuf.Timestamp;
 import com.google.protobuf.util.Timestamps;
-import com.google.pubsub.proxy.exceptions.GenericAPIException;
 
 public class PublishMessageUtils {
 	
@@ -29,11 +28,11 @@ public class PublishMessageUtils {
 	 * @return
 	 * @throws GenericAPIException
 	 */
-	public static Timestamp getTimeStamp(String s) throws GenericAPIException {
+	public static Timestamp getTimeStamp(String s) throws Exception {
 		try {
 			return Timestamps.parse(s);
 		} catch (Exception ex) {
-			throw new GenericAPIException(ex);
+			throw ex;
 		}
 	}
 
@@ -45,11 +44,11 @@ public class PublishMessageUtils {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static Map<String, String> getAllAttributes(Object attributes) throws GenericAPIException {
+	public static Map<String, String> getAllAttributes(Object attributes) throws Exception {
 		try {
 			return (LinkedHashMap<String, String>) attributes;
 		} catch (Exception ex) {
-			throw new GenericAPIException(ex);
+			throw ex;
 		}
 	}
 }
