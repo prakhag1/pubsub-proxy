@@ -59,7 +59,6 @@ public class PublishMessageUnitTest {
     @Before
     public void setUp() {
         publishMessage = new PublishMessage();
-        publishMessage.publishers = publisherList;
         setupRequest();
         setupMockPublisher();
         setupFutures();
@@ -78,6 +77,7 @@ public class PublishMessageUnitTest {
         message.setData(DATA);
         message.setPublishTime(PUBLISH_TIME);
         message.setAttributes(ATTRIBUTES);
+        publishMessage.publishers = publisherList;
     }
 
     private void setupFutures() {
