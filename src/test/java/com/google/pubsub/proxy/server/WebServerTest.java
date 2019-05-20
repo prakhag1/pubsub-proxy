@@ -25,8 +25,12 @@ public class WebServerTest {
             try {
                 main(new String[]{});
             }
+            catch (InterruptedException e) {
+                System.out.println("Server terminated successfully");
+            }
             catch (Exception e) {
                 System.out.println("Unable to start the application");
+                e.printStackTrace();
             }
         }
     }
