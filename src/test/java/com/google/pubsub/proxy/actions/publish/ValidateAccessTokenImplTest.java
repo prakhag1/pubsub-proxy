@@ -64,7 +64,7 @@ public class ValidateAccessTokenImplTest {
     private static final String EXPIRED_TOKEN = "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJuZXR3b3JrLWFkbWluQHF3aWtsYWJzLWdjcC0wYjA3NzYzYmQ5YjM2ZDkzLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiaXNzIjoibmV0d29yay1hZG1pbkBxd2lrbGFicy1nY3AtMGIwNzc2M2JkOWIzNmQ5My5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsImV4cCI6MTU1MjQ3NzY2MiwiaWF0IjoxNTUyNDc0MDYyfQ.B9uFnwHTE8DArQr1pgKYM5L4Lu_LiP4zPeyhADD8GH5h9m8faDoCc_gkMz-RVmKtbTE4xQLoeoBjJKhTdiUUKmpPy1LdIzF6L_1WQxWibAaNd2skR6GAQrDw1TUDPAogYU-8aU0nQAsiooy-8dPk8LoFHZqq47r06HWQOv_4lPvLidM2sJPan67pJ3k_ArFelfJuSuNVK1tHPK-fBY32zfuMkHWNC_5NJQtLigF04iSO5OrdMsePQgATtFO9b3Xjs7z2yoOoldAbQSuJ4hEwVa-GBCoHZLOyZU-LyrS9GUnwn6h_6GGCZyPBTA0otUO3Lw4OnRVjUS1jLVKloabMNA";
     private static final String AUTHENTICATION_SCHEME_BEARER = "Bearer";
     private static final String AUTHENTICATION_SCHEME_BASIC = "Basic";
-    private static final String TEST_CRED_FILE = System.getProperty("GOOGLE_APPLICATION_CREDENTIALS", "src/test/resources/credentials.json");
+    private static final String TEST_CRED_FILE = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
 
     @Mock
     ContainerRequestContext context;

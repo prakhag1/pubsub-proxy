@@ -33,7 +33,7 @@ import java.util.List;
 
 public class PublishMessageTest extends JerseyTest {
 
-    private static final String TEST_CRED_FILE = System.getProperty("GOOGLE_APPLICATION_CREDENTIALS", "src/test/resources/credentials.json");
+    private static final String TEST_CRED_FILE = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
     private static final String AUTHENTICATION_SCHEME_BASIC = "Basic";
     private static final String AUTHENTICATION_SCHEME_BEARER = "Bearer";
     private static final String TOPIC = "TOPIC";
