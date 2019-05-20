@@ -46,7 +46,7 @@ public class WebServerTest {
     }
 
     @Test(timeout = 60000)
-    public void whenTheApplicationStartsJettyServerIsStarted() {
+    public void whenTheApplicationStartsJettyServerIsStarted() throws InterruptedException {
         HttpUriRequest request = new HttpGet("http://localhost:8080");
         Boolean success = false;
         while(!success) {
@@ -57,6 +57,8 @@ public class WebServerTest {
             }
             catch (Exception e) {
                 success = false;
+                System.out.println("Server not started yet. Waiting for another second before retrying.");
+                Thread.sleep(1000);
             }
         }
 
