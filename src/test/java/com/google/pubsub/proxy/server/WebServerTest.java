@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.google.pubsub.proxy.server.WebServer.main;
 
@@ -30,14 +32,18 @@ public class WebServerTest {
         }
     }
 
+    private ExecutorService executorService;
+
 
     @Before
     public void setUp() {
-        new Thread(new ThreadRunner()).start();
+        executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(new ThreadRunner());
     }
 
     @After
     public void tearDown() {
+        executorService.shutdownNow();
     }
 
     @Test
