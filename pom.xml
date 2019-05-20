@@ -172,7 +172,7 @@
 				<configuration>
 					<systemProperties>
 						<property>
-							<name>SERVICE_ACCOUNT_CREDENTIALS</name>
+							<name>GOOGLE_APPLICATION_CREDENTIALS</name>
 							<value>${test.key.file}</value>
 						</property>
 					</systemProperties>
