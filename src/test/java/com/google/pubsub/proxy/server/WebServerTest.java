@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,8 +25,12 @@ public class WebServerTest {
             try {
                 main(new String[]{});
             }
+            catch (InterruptedException e) {
+                System.out.println("Server terminated successfully");
+            }
             catch (Exception e) {
                 System.out.println("Unable to start the application");
+                e.printStackTrace();
             }
         }
     }
@@ -46,11 +49,22 @@ public class WebServerTest {
         executorService.shutdownNow();
     }
 
-    @Test
-    public void whenTheApplicationStartsJettyServerIsStarted() throws IOException, InterruptedException {
-        Thread.sleep(45000);
+    @Test(timeout = 60000)
+    public void whenTheApplicationStartsJettyServerIsStarted() throws InterruptedException {
         HttpUriRequest request = new HttpGet("http://localhost:8080");
-        HttpResponse response = HttpClientBuilder.create().build().execute(request);
-        Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        Boolean success = false;
+        while(!success) {
+            try {
+                HttpResponse response = HttpClientBuilder.create().build().execute(request);
+                Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+                success = true;
+            }
+            catch (Exception e) {
+                success = false;
+                System.out.println("Server not started yet. Waiting for another second before retrying.");
+                Thread.sleep(1000);
+            }
+        }
+
     }
 }
