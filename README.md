@@ -37,9 +37,9 @@ git clone https://github.com/GoogleCloudPlatform/pubsub-proxy
 Create service account:
 This Service Account would be used to sign and verify the access token as well as setup authentication between the proxy and Cloud Pub/Sub. The service account is passed as an environmet variable (GOOGLE_APPLICATION_CREDENTIALS). In the actual deployment on GKE, the service account credentials are passed as a [Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration/secret/) to GOOGLE_APPLICATION_CREDENTIALS.
 ```
-export SERVICE_ACCOUNT_NAME=proxy-test-sa
-export SERVICE_ACCOUNT_DEST=sa.json
-export TOPIC=test-topic
+echo "export SERVICE_ACCOUNT_NAME=proxy-test-sa" >> ~/.bashrc
+echo "export SERVICE_ACCOUNT_DEST=sa.json" >> ~/.bashrc
+echo "export TOPIC=test-topic" >> ~/.bashrc
 
 gcloud iam service-accounts create \
    $SERVICE_ACCOUNT_NAME \
@@ -69,7 +69,7 @@ gcloud pubsub topics create $TOPIC
 ### Run Proxy Without Containerizing
 Export environment variable to include the service account details:
 ```
-export GOOGLE_APPLICATION_CREDENTIALS=$SERVICE_ACCOUNT_DEST
+echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$SERVICE_ACCOUNT_DEST" >> ~/.bashrc
 ```
 To execute test cases and package, run:
 ```
@@ -81,6 +81,7 @@ mvn clean compile assembly:assembly package -DskipTests
 ```
 On a new terminal, start the proxy after changing to the appropriate directory:
 ```
+source ~/.bashrc
 java -jar target/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar 
 ```
 Back on the original terminal, generate a JWT signed by the service account. 
