@@ -1,4 +1,5 @@
-# Publish messages to Google Cloud Pub/Sub using from mobile applications
+# Publish messages to Google Cloud Pub/Sub from mobile/client applications
+
 This is not an officially supported Google product.
 
 Copyright 2019 Google LLC
