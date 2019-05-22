@@ -67,9 +67,12 @@ Export environment variable to include the service account details:
 ```
 echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$SERVICE_ACCOUNT_DEST" >> ~/.bashrc
 ```
-To execute test cases and package, run:
+Change directory:
 ```
 cd pubsub-proxy
+```
+To execute test cases and package, run:
+```
 mvn clean compile assembly:assembly package
 ```
 To skip test cases, run:
