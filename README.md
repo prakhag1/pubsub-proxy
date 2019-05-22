@@ -116,26 +116,26 @@ docker images | grep pubsub-proxy
 Build a container using the docker image:
 ```
 docker run -v $(pwd)/sa.json:/tmp/sa.json \
-   -d --rm --name proxy \
+   -d --rm --name pubsub-proxy \
    -e "GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json" pubsub-proxy
 ```
 Check if the container was successfully created:
 ```
-docker ps | grep proxy
+docker ps | grep pubsub-proxy
 ```
 Test proxy:
 ```
-docker exec -it $(docker ps | grep runtime | awk -F" " '{print $1}') \
-   curl -v POST localhost:8080/publish \
+docker exec -it $(docker ps | grep pubsub-proxy | awk -F" " '{print $1}') \
+   curl -i POST localhost:8080/publish \
    -H "Authorization: Bearer $TOKEN" \
    -H "Content-Type: application/json" \
    -d '{"topic": "'$TOPIC'", "messages": [ {"attributes": {"key1": "value1", "key2" : "value2"}, "data": "test data"}]}'
 ```
 Check logs:
 ```
-docker logs proxy
+docker logs pubsub-proxy
 ```
-###### Deploy Proxy on GKE
+### Deploy Proxy on GKE
 Detailed steps to run this proxy on GCP is covered in the tutorial [here]().
 
 ## Cleaning Up
@@ -145,7 +145,7 @@ rm -rf $SERVICE_ACCOUNT_DEST private.key
 ```
 Stop the running docker container:
 ```
-docker stop proxy
+docker stop pubsub-proxy
 ```
 ## Additional Functionalities
 To add functionalities such as traffic filtering and rate limiting to the proxy, we can use the [Istio](https://istio.io) add-on. There is going to be no change to the application code but the proxy needs to be re-deployed with Istio. Detailed walk through of the steps involved are convered in the tutorial [here](). 
