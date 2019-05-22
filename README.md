@@ -32,7 +32,7 @@ The proxy forwards the validated requests to Cloud Pub/Sub. Pub/Sub uses Cloud I
 ## Local Deployment & Testing
 Clone repository:
 ```
-git clone https://github.com/GoogleCloudPlatform/pubsub-proxy && \
+git clone https://github.com/GoogleCloudPlatform/pubsub-proxy 
 cd pubsub-proxy
 ```
 Create service account:
