@@ -65,7 +65,7 @@ Create Pub/Sub topic:
 ```
 gcloud pubsub topics create $TOPIC
 ```
-#### Run Proxy Without Containerizing
+### Run Proxy Without Containerizing
 Export environment variable to include the service account details:
 ```
 export GOOGLE_APPLICATION_CREDENTIALS=$SERVICE_ACCOUNT_DEST
@@ -101,7 +101,7 @@ curl -i POST localhost:8080/publish \
 ```
 On the terminal running the proxy, check the logs to verify if the message was successfully published to Pub/Sub.
 
-#### Containerize Proxy
+### Containerize Proxy
 Once the standalone proxy works, proceed to containerize the application for local testing.
 Build docker image:
 ```
