@@ -35,13 +35,19 @@ Clone repository:
 git clone https://github.com/GoogleCloudPlatform/pubsub-proxy 
 cd pubsub-proxy
 ```
+Set environment variables:
+```
+echo "export SERVICE_ACCOUNT_NAME=proxy-test-sa" > .env
+echo "export SERVICE_ACCOUNT_DEST=sa.json" >> .env
+echo "export TOPIC=test-topic" >> .env
+echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$SERVICE_ACCOUNT_DEST" >> .env
+echo "export PROJECT=$(gcloud info --format='value(config.project)')" >> .env
+```
+
 Create service account:
 This Service Account would be used to sign and verify the access token as well as setup authentication between the proxy and Cloud Pub/Sub. The service account is passed as an environmet variable (GOOGLE_APPLICATION_CREDENTIALS). In the actual deployment on GKE, the service account credentials are passed as a [Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration/secret/) to GOOGLE_APPLICATION_CREDENTIALS.
 ```
-echo "export SERVICE_ACCOUNT_NAME=proxy-test-sa" >> ~/.bashrc
-echo "export SERVICE_ACCOUNT_DEST=sa.json" >> ~/.bashrc
-echo "export TOPIC=test-topic" >> ~/.bashrc
-
+source .env
 gcloud iam service-accounts create \
    $SERVICE_ACCOUNT_NAME \
    --display-name $SERVICE_ACCOUNT_NAME
@@ -50,7 +56,7 @@ SA_EMAIL=$(gcloud iam service-accounts list \
    --filter="displayName:$SERVICE_ACCOUNT_NAME" \
    --format='value(email)')
 
-gcloud projects add-iam-policy-binding [PROJECT_NAME] \
+gcloud projects add-iam-policy-binding $PROJECT \
    --member serviceAccount:$SA_EMAIL \
    --role roles/pubsub.publisher
 
@@ -64,10 +70,6 @@ Create Pub/Sub topic:
 gcloud pubsub topics create $TOPIC
 ```
 ### Run Proxy Without Containerizing
-Export environment variable to include the service account details:
-```
-echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$SERVICE_ACCOUNT_DEST" >> ~/.bashrc
-```
 To execute test cases and package, run:
 ```
 mvn clean compile assembly:assembly package
@@ -78,7 +80,7 @@ mvn clean compile assembly:assembly package -DskipTests
 ```
 On a new terminal, start the proxy after changing to the directory where pubsub-proxy was cloned:
 ```
-source ~/.bashrc
+source .env
 java -jar target/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar 
 ```
 Back on the original terminal, generate a JWT signed by the service account. 

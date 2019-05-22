@@ -18,6 +18,7 @@ import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.api.gax.rpc.ApiException;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -48,7 +49,7 @@ public class PublishMessage {
 	ServletContext ctx;
 	protected ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
-	private static final String projectId = ServiceOptions.getDefaultProjectId();
+	private static String projectId = ServiceOptions.getDefaultProjectId();
 
 	/**
 	 * Entry point for POST /publish Enforces token validation
@@ -72,7 +73,10 @@ public class PublishMessage {
 		if (req.getMessages().isEmpty()) {
 			throw new MissingRequiredFieldsException("Message cannot be empty");
 		}
-
+		// If project id is returned as null from the default environment variables then read it from the service account
+		if (null == projectId || projectId.isEmpty()) {
+			projectId = ((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId();
+		}
 		try {
 			Publisher publisher = getPublisher(req.getTopic());
 			for (final Message msg : req.getMessages()) {
