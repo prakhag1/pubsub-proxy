@@ -65,7 +65,7 @@ Create Pub/Sub topic:
 ```
 gcloud pubsub topics create $TOPIC
 ```
-###### Run Proxy Without Containerizing
+#### Run Proxy Without Containerizing
 Export environment variable to include the service account details:
 ```
 export GOOGLE_APPLICATION_CREDENTIALS=$SERVICE_ACCOUNT_DEST
@@ -85,10 +85,12 @@ java -jar target/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 Back on the original terminal, generate a JWT signed by the service account. 
 ```
 npm install --global jsonwebtokencli --loglevel=error
+
 cat $SERVICE_ACCOUNT_DEST | jq -r '.private_key' > private.key
+
 TOKEN=$(jwt --encode --algorithm 'RS256' \
-   --private-key-file './private.key' \
-   '{"alg":"RS256", "sub":"'$SA_EMAIL'", "iss":"'$SA_EMAIL'", "name":"John Doe", "admin":true}')
+            --private-key-file './private.key' \
+            '{"alg":"RS256", "sub":"'$SA_EMAIL'", "iss":"'$SA_EMAIL'", "name":"John Doe", "admin":true}')
 ```
 Publish a message to Cloud Pub/Sub:
 ```
@@ -99,7 +101,7 @@ curl -i POST localhost:8080/publish \
 ```
 On the terminal running the proxy, check the logs to verify if the message was successfully published to Pub/Sub.
 
-###### Containerize Proxy
+#### Containerize Proxy
 Once the standalone proxy works, proceed to containerize the application for local testing.
 Build docker image:
 ```
