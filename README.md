@@ -37,9 +37,9 @@ git clone https://github.com/GoogleCloudPlatform/pubsub-proxy
 Create service account:
 This Service Account would be used to sign and verify the access token as well as setup authentication between the proxy and Cloud Pub/Sub. The service account is passed as an environmet variable (GOOGLE_APPLICATION_CREDENTIALS). In the actual deployment on GKE, the service account credentials are passed as a [Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration/secret/) to GOOGLE_APPLICATION_CREDENTIALS.
 ```
-SERVICE_ACCOUNT_NAME=proxy-test-sa
-SERVICE_ACCOUNT_DEST=sa.json
-TOPIC=test-topic
+export SERVICE_ACCOUNT_NAME=proxy-test-sa
+export SERVICE_ACCOUNT_DEST=sa.json
+export TOPIC=test-topic
 
 gcloud iam service-accounts create \
    $SERVICE_ACCOUNT_NAME \
