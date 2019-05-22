@@ -53,10 +53,6 @@ gcloud projects add-iam-policy-binding [PROJECT_NAME] \
    --member serviceAccount:$SA_EMAIL \
    --role roles/pubsub.publisher
 
-gcloud projects add-iam-policy-binding [PROJECT_NAME] \
-   --member serviceAccount:$SA_EMAIL \
-   --role roles/iam.serviceAccountActor
-
 mkdir -p $(dirname $SERVICE_ACCOUNT_DEST) && \
 gcloud iam service-accounts keys create \
    $SERVICE_ACCOUNT_DEST \
