@@ -65,6 +65,7 @@ gcloud pubsub topics create $TOPIC
 ### Run Proxy Without Containerizing
 Export environment variable to include the service account details:
 ```
+cd pubsub-proxy
 echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$SERVICE_ACCOUNT_DEST" >> ~/.bashrc
 ```
 To execute test cases and package, run:
@@ -75,7 +76,7 @@ To skip test cases, run:
 ```
 mvn clean compile assembly:assembly package -DskipTests
 ```
-On a new terminal, start the proxy after changing to the appropriate directory:
+On a new terminal, start the proxy after changing to the directory where pubsub-proxy was cloned:
 ```
 source ~/.bashrc
 java -jar target/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar 
