@@ -136,6 +136,15 @@ docker logs $(docker ps | grep runtime | awk -F" " '{print $1}')
 ###### Deploy Proxy on GKE
 Detailed steps to run this proxy on GCP is covered in the tutorial [here]().
 
+## Cleaning Up
+Remove the private keys:
+```
+rm -rf $SERVICE_ACCOUNT_DEST private.key 
+```
+Stop the running docker container:
+```
+docker stop proxy
+```
 ## Additional Functionalities
 To add functionalities such as traffic filtering and rate limiting to the proxy, we can use the [Istio](https://istio.io) add-on. There is going to be no change to the application code but the proxy needs to be re-deployed with Istio. Detailed walk through of the steps involved are convered in the tutorial [here](). 
 
