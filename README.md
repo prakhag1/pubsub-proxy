@@ -40,14 +40,20 @@ Set environment variables:
 echo "export SERVICE_ACCOUNT_NAME=proxy-test-sa" > .env
 echo "export SERVICE_ACCOUNT_DEST=sa.json" >> .env
 echo "export TOPIC=test-topic" >> .env
-echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$SERVICE_ACCOUNT_DEST" >> .env
+echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/\$SERVICE_ACCOUNT_DEST" >> .env
 echo "export PROJECT=$(gcloud info --format='value(config.project)')" >> .env
 ```
-
 Create service account:
 This Service Account would be used to sign and verify the access token as well as setup authentication between the proxy and Cloud Pub/Sub. The service account is passed as an environmet variable (GOOGLE_APPLICATION_CREDENTIALS). In the actual deployment on GKE, the service account credentials are passed as a [Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration/secret/) to GOOGLE_APPLICATION_CREDENTIALS.
 ```
 source .env
+```
+Check whether GOOGLE_APPLICATION_CREDENTIALS is set properly. Without this variable, the application server will not start:
+```
+echo $GOOGLE_APPLICATION_CREDENTIALS
+```
+Create service account:
+```
 gcloud iam service-accounts create \
    $SERVICE_ACCOUNT_NAME \
    --display-name $SERVICE_ACCOUNT_NAME
@@ -95,7 +101,7 @@ TOKEN=$(jwt --encode --algorithm 'RS256' \
 ```
 Publish a message to Cloud Pub/Sub:
 ```
-curl -i POST localhost:8080/publish \
+curl -i -X POST localhost:8080/publish \
    -H "Authorization: Bearer $TOKEN" \
    -H "Content-Type: application/json" \
    -d '{"topic": "'$TOPIC'", "messages": [ {"attributes": {"key1": "value1", "key2" : "value2"}, "data": "test data"}]}'
@@ -125,7 +131,7 @@ docker ps | grep pubsub-proxy
 Test proxy:
 ```
 docker exec -it $(docker ps | grep pubsub-proxy | awk -F" " '{print $1}') \
-   curl -i POST localhost:8080/publish \
+   curl -i -X POST localhost:8080/publish \
    -H "Authorization: Bearer $TOKEN" \
    -H "Content-Type: application/json" \
    -d '{"topic": "'$TOPIC'", "messages": [ {"attributes": {"key1": "value1", "key2" : "value2"}, "data": "test data"}]}'
