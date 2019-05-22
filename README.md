@@ -132,7 +132,7 @@ docker exec -it $(docker ps | grep runtime | awk -F" " '{print $1}') \
 ```
 Check logs:
 ```
-docker logs $(docker ps | grep runtime | awk -F" " '{print $1}')
+docker logs proxy
 ```
 ###### Deploy Proxy on GKE
 Detailed steps to run this proxy on GCP is covered in the tutorial [here]().
