@@ -14,6 +14,19 @@
 
 package com.google.pubsub.proxy.actions.publish;
 
+import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -31,25 +44,14 @@ import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PubsubMessage.Builder;
 
-import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
 @Path("/publish")
 public class PublishMessage {
 
 	@Context
-	ServletContext ctx;
+	static ServletContext ctx;
 	protected ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
-	private static String projectId = ServiceOptions.getDefaultProjectId();
+	private static final String projectId = Optional.ofNullable(ServiceOptions.getDefaultProjectId()).orElse(((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId());
 
 	/**
 	 * Entry point for POST /publish Enforces token validation
@@ -74,9 +76,9 @@ public class PublishMessage {
 			throw new MissingRequiredFieldsException("Message cannot be empty");
 		}
 		// If project id is returned as null from the default environment variables then read it from the service account
-		if (null == projectId || projectId.isEmpty()) {
-			projectId = ((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId();
-		}
+		//if (null == projectId || projectId.isEmpty()) {
+		//	projectId = ((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId();
+		//}
 		try {
 			Publisher publisher = getPublisher(req.getTopic());
 			for (final Message msg : req.getMessages()) {
