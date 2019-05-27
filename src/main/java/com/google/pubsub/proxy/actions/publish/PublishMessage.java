@@ -15,7 +15,6 @@
 package com.google.pubsub.proxy.actions.publish;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -51,6 +50,7 @@ public class PublishMessage {
 	ServletContext ctx;
 	protected ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
+	private static String projectId = ServiceOptions.getDefaultProjectId();
 
 	/**
 	 * Entry point for POST /publish Enforces token validation
@@ -75,9 +75,9 @@ public class PublishMessage {
 			throw new MissingRequiredFieldsException("Message cannot be empty");
 		}
 		// If project id is returned as null from the default environment variables then read it from the service account
-		//if (null == projectId || projectId.isEmpty()) {
-		//	projectId = ((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId();
-		//}
+		if (null == projectId || projectId.isEmpty()) {
+			projectId = ((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId();
+		}
 		try {
 			Publisher publisher = getPublisher(req.getTopic());
 			for (final Message msg : req.getMessages()) {
@@ -136,7 +136,6 @@ public class PublishMessage {
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
 		if (!publishers.containsKey(topic)) {
-			String projectId = Optional.ofNullable(ServiceOptions.getDefaultProjectId()).orElse(((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId());
 			LOGGER.info("Creating new publisher for: " + topic);
 			Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
 			publishers.put(topic, publisher);
