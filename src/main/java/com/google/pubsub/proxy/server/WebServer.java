@@ -35,7 +35,7 @@ public class WebServer {
 		contextHandler.addServlet(servletHolder, "/*");
 		contextHandler.addEventListener(new ServletInit());
 
-		Server server = new Server();
+		Server server = new Server(8080);
 		server.setHandler(contextHandler);
 		server.start();
 		server.join();
