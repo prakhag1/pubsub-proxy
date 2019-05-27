@@ -48,10 +48,9 @@ import com.google.pubsub.v1.PubsubMessage.Builder;
 public class PublishMessage {
 
 	@Context
-	static ServletContext ctx;
+	ServletContext ctx;
 	protected ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
-	private static final String projectId = Optional.ofNullable(ServiceOptions.getDefaultProjectId()).orElse(((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId());
 
 	/**
 	 * Entry point for POST /publish Enforces token validation
@@ -137,6 +136,7 @@ public class PublishMessage {
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
 		if (!publishers.containsKey(topic)) {
+			String projectId = Optional.ofNullable(ServiceOptions.getDefaultProjectId()).orElse(((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId());
 			LOGGER.info("Creating new publisher for: " + topic);
 			Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
 			publishers.put(topic, publisher);
