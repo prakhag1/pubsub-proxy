@@ -34,11 +34,27 @@ spec:
           secretName: clientsecret
       containers:
       - name: "pubsub-proxy"
-        image: "gcr.io/[PROJECT_ID]/pubsub-proxy:latest"
+        image: "gcr.io/[PROJECT_ID]/pubsub-proxy:v1"
         volumeMounts:
         - name: google-cloud-key
           mountPath: /var/secrets/google
+	ports:
+        - name: livered-port
+          containerPort: 8080
+          hostPort: 8080
         env:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/secrets/google/key.json
+	readinessProbe:
+          httpGet:
+             path: /
+             port: livered-port
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+             path: /
+             port: livered-port
+          initialDelaySeconds: 5
+          periodSeconds: 10
 
