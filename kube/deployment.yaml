@@ -16,11 +16,10 @@ apiVersion: "extensions/v1beta1"
 kind: "Deployment"
 metadata:
   name: "pubsub-proxy"
-  namespace: "default"
   labels:
     app: "pubsub-proxy"
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: "pubsub-proxy"
@@ -28,34 +27,28 @@ spec:
     metadata:
       labels:
         app: "pubsub-proxy"
-        version: v1
     spec:
       volumes:
-      - name: google-cloud-key
+      - name: nginx-ssl
         secret:
-          secretName: clientsecret
+          secretName: nginx-ssl
       containers:
+      - name: esp
+        image: gcr.io/endpoints-release/endpoints-runtime:1.16.0
+        args: [
+                "--ssl_port", "443",
+                "--service=pubtest.endpoints.[PROJECT_ID].cloud.goog",
+                "--rollout_strategy=managed",
+                "--backend=127.0.0.1:8080"
+        ]
+        ports:
+        - containerPort: 443
+        volumeMounts:
+        - mountPath: /etc/nginx/ssl
+          name: nginx-ssl
+          readOnly: true
       - name: "pubsub-proxy"
         image: "gcr.io/[PROJECT_ID]/pubsub-proxy:v1"
-        volumeMounts:
-        - name: google-cloud-key
-          mountPath: /var/secrets/google
+        imagePullPolicy: Always
         ports:
-        - name: livered-port
-          containerPort: 8080
-          hostPort: 8080
-        env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/secrets/google/key.json
-        readinessProbe:
-          httpGet:
-             path: /
-             port: livered-port
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-             path: /
-             port: livered-port
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          - containerPort: 8080

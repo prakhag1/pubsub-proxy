@@ -14,6 +14,8 @@
 
 package com.google.pubsub.proxy.entities;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -50,6 +52,6 @@ public class Request {
 
 	@JsonProperty("messages")
 	public void setMessages(List<Message> messages) {
-		this.messages = messages;
+		this.messages = Collections.unmodifiableList(new ArrayList<Message>(messages));
 	}
 }

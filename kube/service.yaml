@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License. 
 
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
+apiVersion: "v1"
+kind: "Service"
 metadata:
-  name: pubsub-proxy-destination-rule
+  name: "pubsub-proxy"
+  labels:
+    app: "pubsub-proxy"
 spec:
-  host: pubsub-proxy
-  subsets:
-  - name: v1
-    labels:
-      version: v1
+  ports:
+  - protocol: "TCP"
+    port: 443
+    name: https
+  selector:
+    app: "pubsub-proxy"
+  type: "LoadBalancer"

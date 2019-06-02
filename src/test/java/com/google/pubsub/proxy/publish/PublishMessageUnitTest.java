@@ -1,23 +1,12 @@
-package com.google.pubsub.proxy.actions.publish;
+package com.google.pubsub.proxy.publish;
 
-import com.google.api.core.ApiFuture;
-import com.google.api.gax.grpc.GrpcStatusCode;
-import com.google.api.gax.rpc.ApiExceptionFactory;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.pubsub.proxy.entities.Message;
-import com.google.pubsub.proxy.entities.Request;
-import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
-import com.google.pubsub.v1.PubsubMessage;
-import io.grpc.Status;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,11 +18,26 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.api.core.ApiFuture;
+import com.google.api.gax.grpc.GrpcStatusCode;
+import com.google.api.gax.rpc.ApiExceptionFactory;
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.pubsub.proxy.entities.Message;
+import com.google.pubsub.proxy.entities.Request;
+import com.google.pubsub.proxy.publish.PublishMessage;
+import com.google.pubsub.v1.PubsubMessage;
+
+import io.grpc.Status;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PublishMessageUnitTest {
@@ -77,7 +81,7 @@ public class PublishMessageUnitTest {
         message.setData(DATA);
         message.setPublishTime(PUBLISH_TIME);
         message.setAttributes(ATTRIBUTES);
-        publishMessage.publishers = publisherList;
+        publishMessage.setPublishers(publisherList);
     }
 
     private void setupFutures() {
@@ -94,26 +98,6 @@ public class PublishMessageUnitTest {
     public void WhenNoRequestIsNotPresentThendoPostThrowsNPE() throws Exception {
         publishMessage.doPost(null);
 
-    }
-
-    @Test(expected = MissingRequiredFieldsException.class)
-    public void WhenNoRequestTopicIsNullThendoPostThrowsMissingRequiredFieldsException() throws Exception {
-        request.setTopic(null);
-        publishMessage.doPost(request);
-
-    }
-
-    @Test(expected = MissingRequiredFieldsException.class)
-    public void WhenNoRequestMessagesIsNullThendoPostThrowsMissingRequiredFieldsException() throws Exception {
-        request.setMessages(null);
-        publishMessage.doPost(request);
-
-    }
-
-    @Test(expected = MissingRequiredFieldsException.class)
-    public void WhenNoRequestMessagesIsEmptyThendoPostThrowsMissingRequiredFieldsException() throws Exception {
-        request.setMessages(new ArrayList<>());
-        publishMessage.doPost(request);
     }
 
     @Test

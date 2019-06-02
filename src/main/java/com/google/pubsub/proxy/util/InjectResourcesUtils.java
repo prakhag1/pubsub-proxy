@@ -21,10 +21,7 @@ package com.google.pubsub.proxy.util;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import com.google.pubsub.proxy.actions.publish.PublishMessage;
-import com.google.pubsub.proxy.actions.publish.ValidateAccessTokenImpl;
-import com.google.pubsub.proxy.exceptions.AccessTokenAuthException;
-import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
+import com.google.pubsub.proxy.publish.PublishMessage;
 import com.google.pubsub.proxy.server.HealthCheck;
 
 public class InjectResourcesUtils {
@@ -35,15 +32,8 @@ public class InjectResourcesUtils {
 		resourceConfig.register(new PublishMessage());
 		resourceConfig.register(new HealthCheck());
 
-		// Providers
-		resourceConfig.register(new ValidateAccessTokenImpl());
-
 		// Jackson - json to POJO
 		resourceConfig.register(JacksonFeature.class);
-
-		// Custom exception classes written as providers
-		resourceConfig.register(new AccessTokenAuthException());
-		resourceConfig.register(new MissingRequiredFieldsException());
 
 		return resourceConfig;
 	}

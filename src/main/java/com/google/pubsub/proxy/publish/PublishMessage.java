@@ -12,32 +12,29 @@
 * See the License for the specific language governing permissions and
 * limitations under the License. */
 
-package com.google.pubsub.proxy.actions.publish;
+package com.google.pubsub.proxy.publish;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.api.gax.rpc.ApiException;
-import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.proxy.entities.Message;
 import com.google.pubsub.proxy.entities.Request;
-import com.google.pubsub.proxy.exceptions.MissingRequiredFieldsException;
 import com.google.pubsub.proxy.util.PublishMessageUtils;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
@@ -46,12 +43,26 @@ import com.google.pubsub.v1.PubsubMessage.Builder;
 @Path("/publish")
 public class PublishMessage {
 
-	@Context
-	ServletContext ctx;
-	protected ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<>();
+	private static final String projectId = ServiceOptions.getDefaultProjectId();
+	private ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
-	private static String projectId = ServiceOptions.getDefaultProjectId();
 
+	/**
+	 * Publisher getter
+	 * @return
+	 */
+	public ConcurrentHashMap<String, Publisher> getPublishers() {
+		return publishers;
+	}
+
+	/**
+	 * Publisher setter
+	 * @param publishers
+	 */
+	public void setPublishers(ConcurrentHashMap<String, Publisher> publishers) {
+		this.publishers = publishers;
+	}
+	
 	/**
 	 * Entry point for POST /publish Enforces token validation
 	 * 
@@ -62,22 +73,18 @@ public class PublishMessage {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ValidateAccessToken
 	public Response doPost(Request req) throws Exception {
 
 		if (null == req.getTopic()) {
-			throw new MissingRequiredFieldsException("Pub/Sub topic required");
+			return invalidRequest("Pub/Sub topic required");
 		}
 		if (null == req.getMessages()) {
-			throw new MissingRequiredFieldsException("Message required");
+			return invalidRequest("Message required");
 		}
 		if (req.getMessages().isEmpty()) {
-			throw new MissingRequiredFieldsException("Message cannot be empty");
+			return invalidRequest("Message cannot be empty");
 		}
-		// If project id is returned as null from the default environment variables then read it from the service account
-		if (null == projectId || projectId.isEmpty()) {
-			projectId = ((ServiceAccountCredentials) ctx.getAttribute("serviceaccount")).getProjectId();
-		}
+
 		try {
 			Publisher publisher = getPublisher(req.getTopic());
 			for (final Message msg : req.getMessages()) {
@@ -135,12 +142,24 @@ public class PublishMessage {
 	 * @throws Exception
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
-		if (!publishers.containsKey(topic)) {
+		if (!getPublishers().containsKey(topic)) {
 			LOGGER.info("Creating new publisher for: " + topic);
 			Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
-			publishers.put(topic, publisher);
+			getPublishers().put(topic, publisher);
 			return publisher;
 		}
-		return publishers.get(topic);
+		return getPublishers().get(topic);
+	}
+	
+	/**
+	 * Handle missing parameters in incoming requests
+	 * @param msg
+	 * @return
+	 */
+	private Response invalidRequest(String msg) {
+		return Response.status(Status.BAD_REQUEST)
+				.entity(msg)
+				.type(MediaType.APPLICATION_JSON)
+				.build();
 	}
 }

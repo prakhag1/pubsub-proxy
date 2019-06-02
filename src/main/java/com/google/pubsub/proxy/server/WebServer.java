@@ -33,7 +33,6 @@ public class WebServer {
 		
 		ServletHolder servletHolder = new ServletHolder(new ServletContainer(InjectResourcesUtils.injectResources()));
 		contextHandler.addServlet(servletHolder, "/*");
-		contextHandler.addEventListener(new ServletInit());
 
 		Server server = new Server(8080);
 		server.setHandler(contextHandler);
