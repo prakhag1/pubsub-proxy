@@ -12,23 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START swagger]
 swagger: "2.0"
 info:
   description: "Pub/Sub proxy exposed as an Endpoint API"
   title: "PubSub Proxy"
   version: "1.0.0"
 host: "pubtest.endpoints.[PROJECT_ID].cloud.goog"
-#x-google-endpoints:
-#  - name: "pubtest.endpoints.[PROJECT_ID].cloud.goog"
-#    target: "[IP_ADDRESS]"
-# [END swagger]
 consumes:
   - "application/json"
 produces:
   - "application/json"
 schemes:
-# Uncomment the next line if you configure SSL for this API.
   - "https"
 paths:
   "/publish":
