@@ -47,18 +47,12 @@ public class PublishMessage {
 	private ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 
-	/**
-	 * Publisher getter
-	 * @return
-	 */
+	
 	public ConcurrentHashMap<String, Publisher> getPublishers() {
 		return publishers;
 	}
 
-	/**
-	 * Publisher setter
-	 * @param publishers
-	 */
+	
 	public void setPublishers(ConcurrentHashMap<String, Publisher> publishers) {
 		this.publishers = publishers;
 	}
