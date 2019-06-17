@@ -34,7 +34,7 @@ spec:
           secretName: nginx-ssl
       containers:
       - name: esp
-        image: gcr.io/endpoints-release/endpoints-runtime:1.16.0
+        image: gcr.io/endpoints-release/endpoints-runtime:1.35.0
         args: [
                 "--ssl_port", "443",
                 "--service=pubtest.endpoints.[PROJECT_ID].cloud.goog",
