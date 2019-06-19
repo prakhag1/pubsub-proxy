@@ -20,37 +20,37 @@ The detailed steps to run this proxy on GCP is covered in the tutorial available
 - Cloud PubSub
 - Compute Engine
 - Cloud Build 
+- Cloud Endpoints
 - Container Registry
 
 ## Request Flow
-Any request destined to Pub/Sub goes through the proxy. To identify the calling app that sends requests to the proxy, we will use a JSON Web Token (JWT). The application backend generates a JWT and uses a [GCP service account's](https://cloud.google.com/iam/docs/understanding-service-accounts) private key to sign the token. The signed JWT is used to authenticate calls from the client-app to the proxy. 
+Any request destined to Pub/Sub goes through Pub/Sub proxy. To identify the calling app that sends requests to the proxy, we will use OpenId Connect Tokens (OIDC). The Pub/Sub proxy makes use of [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/architecture-overview) to authenticate requests from users.
 
-The proxy forwards the validated requests to Cloud Pub/Sub. Pub/Sub uses Cloud IAM to verify whether the proxy has the right permissions to publish messages. The service account that was used to sign and verify the JWT, will also be used to authenticate calls from the proxy to the Cloud Pub/Sub API.
+The client sends a request to the Pub/Sub proxy which is intercepted by Cloud Endpoints. Cloud Endpoints validates the OIDC token before forwarding the request to Pub/Sub proxy. Upon receiving the request, Pub/Sub proxy creates an publish request and sends it to Cloud Pub/Sub. For all incoming requests, Cloud Pub/Sub needs to ensure if the caller has the right permissions to issue publish requests. The Pub/Sub proxy uses the [Compute Engine default service account](https://cloud.google.com/compute/docs/access/service-accounts#compute_engine_default_service_account) to authenticate itself with Cloud Pub/Sub.
 
 ![Alt text](img/requestflow.png?raw=true)
 
 ## Local Deployment & Testing
+The local deployment of Pub/Sub proxy (discussed below) has a slight departure from the request flow discussed above. For local testing, Pub/Sub proxy is exposed as an independent entity and not via Cloud Endpoints. This means that the calls do not need to be carry an authentication token to validate the caller with Pub/Sub proxy. 
+
+For production grade deployments, refer to the [detailed solution post]().
+
 Clone repository:
 ```
 git clone https://github.com/GoogleCloudPlatform/solutions-pubsub-proxy-rest
-cd pubsub-proxy
+cd solutions-pubsub-proxy-rest
 ```
 Set environment variables:
 ```
-echo "export SERVICE_ACCOUNT_NAME=proxy-test-sa" > .env
-echo "export SERVICE_ACCOUNT_DEST=sa.json" >> .env
-echo "export TOPIC=test-topic" >> .env
-echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/\$SERVICE_ACCOUNT_DEST" >> .env
-echo "export PROJECT=$(gcloud info --format='value(config.project)')" >> .env
+export SERVICE_ACCOUNT_NAME=proxy-test-sa
+export SERVICE_ACCOUNT_DEST=sa.json
+export TOPIC=test-topic
+export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/sa.json
+export PROJECT=$(gcloud info --format='value(config.project)')
 ```
-Create service account:
-This Service Account would be used to sign and verify the access token as well as setup authentication between the proxy and Cloud Pub/Sub. The service account is passed as an environmet variable (GOOGLE_APPLICATION_CREDENTIALS). In the actual deployment on GKE, the service account credentials are passed as a [Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration/secret/) to GOOGLE_APPLICATION_CREDENTIALS.
+Create Pub/Sub topic:
 ```
-source .env
-```
-Check whether GOOGLE_APPLICATION_CREDENTIALS is set properly. Without this variable, the application server will not start:
-```
-echo $GOOGLE_APPLICATION_CREDENTIALS
+gcloud pubsub topics create $TOPIC
 ```
 Create service account:
 ```
@@ -71,10 +71,6 @@ gcloud iam service-accounts keys create \
    $SERVICE_ACCOUNT_DEST \
    --iam-account $SA_EMAIL
 ```
-Create Pub/Sub topic:
-```
-gcloud pubsub topics create $TOPIC
-```
 ### Run Proxy Without Containerizing
 To execute test cases and package, run:
 ```
@@ -84,25 +80,17 @@ To skip test cases, run:
 ```
 mvn clean compile assembly:assembly package -DskipTests
 ```
+Check whether GOOGLE_APPLICATION_CREDENTIALS is set properly. Without this variable, the application server will not start:
+```
+echo $GOOGLE_APPLICATION_CREDENTIALS
+```
 On a new terminal, start the proxy after changing to the directory where pubsub-proxy was cloned:
 ```
-source .env
 java -jar target/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar 
 ```
-Back on the original terminal, generate a JWT signed by the service account. 
-```
-npm install --global jsonwebtokencli --loglevel=error
-
-cat $SERVICE_ACCOUNT_DEST | jq -r '.private_key' > private.key
-
-TOKEN=$(jwt --encode --algorithm 'RS256' \
-            --private-key-file './private.key' \
-            '{"alg":"RS256", "sub":"'$SA_EMAIL'", "iss":"'$SA_EMAIL'", "name":"John Doe", "admin":true}')
-```
-Publish a message to Cloud Pub/Sub:
+Back on the original terminal, publish a message to Cloud Pub/Sub via proxy.
 ```
 curl -i -X POST localhost:8080/publish \
-   -H "Authorization: Bearer $TOKEN" \
    -H "Content-Type: application/json" \
    -d '{"topic": "'$TOPIC'", "messages": [ {"attributes": {"key1": "value1", "key2" : "value2"}, "data": "test data"}]}'
 ```
@@ -130,9 +118,8 @@ docker ps | grep pubsub-proxy
 ```
 Test proxy:
 ```
-docker exec -it $(docker ps | grep pubsub-proxy | awk -F" " '{print $1}') \
+docker exec -it pubsub-proxy \
    curl -i -X POST localhost:8080/publish \
-   -H "Authorization: Bearer $TOKEN" \
    -H "Content-Type: application/json" \
    -d '{"topic": "'$TOPIC'", "messages": [ {"attributes": {"key1": "value1", "key2" : "value2"}, "data": "test data"}]}'
 ```
@@ -144,14 +131,11 @@ docker logs pubsub-proxy
 Detailed steps to run this proxy on GCP is covered in the tutorial [here]().
 
 ## Cleaning Up
-Remove the private keys:
+Remove the private key:
 ```
-rm -rf $SERVICE_ACCOUNT_DEST private.key 
+rm -rf $SERVICE_ACCOUNT_DEST
 ```
 Stop the running docker container:
 ```
 docker stop pubsub-proxy
 ```
-## Additional Functionalities
-To add functionalities such as traffic filtering and rate limiting to the proxy, we can use the [Istio](https://istio.io) add-on. There is going to be no change to the application code but the proxy needs to be re-deployed with Istio. Detailed walk through of the steps involved are convered in the tutorial [here](). 
-
