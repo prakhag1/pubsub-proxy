@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 FROM maven:3.5.2-jdk-8-alpine AS MAVEN_TOOL_CHAIN
 COPY pom.xml /tmp/
 COPY src /tmp/src/
@@ -18,6 +19,6 @@ WORKDIR /tmp/
 RUN mvn clean compile assembly:assembly package -DskipTests=true
 
 FROM openjdk:8-jre
-COPY --from=MAVEN_TOOL_CHAIN /tmp/. /
+COPY --from=MAVEN_TOOL_CHAIN /tmp/target /
 EXPOSE 8080
-CMD java -jar /target/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+CMD ["java", "-jar", "/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar"]

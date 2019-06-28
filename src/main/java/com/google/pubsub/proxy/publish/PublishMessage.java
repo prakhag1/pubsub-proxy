@@ -15,6 +15,8 @@
 package com.google.pubsub.proxy.publish;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -28,7 +30,6 @@ import javax.ws.rs.core.Response.Status;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
-import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -48,22 +49,20 @@ public class PublishMessage {
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 
 	
-	public ConcurrentHashMap<String, Publisher> getPublishers() {
+	public Map<String, Publisher> getPublishers() {
 		return publishers;
 	}
 
 	
-	public void setPublishers(ConcurrentHashMap<String, Publisher> publishers) {
-		this.publishers = publishers;
+	@SuppressWarnings("unchecked")
+	public void setPublishers(HashMap<String, Publisher> publishers) {
+		this.publishers = (ConcurrentHashMap<String, Publisher>) publishers.clone();
 	}
 	
 	/**
 	 * Entry point for POST /publish Enforces token validation
 	 * 
-	 * @param req
-	 *            - POJO translated user request
-	 * @return
-	 * @throws Exception
+	 * @param req - POJO translated user request
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -79,23 +78,16 @@ public class PublishMessage {
 			return invalidRequest("Message cannot be empty");
 		}
 
-		try {
-			Publisher publisher = getPublisher(req.getTopic());
-			for (final Message msg : req.getMessages()) {
-				publishMessage(publisher, msg);
-			}
-		} catch (Exception ex) {
-			throw ex;
+		Publisher publisher = getPublisher(req.getTopic());
+		for (final Message msg : req.getMessages()) {
+			publishMessage(publisher, msg);
 		}
+
 		return Response.ok().build();
 	}
 
 	/**
 	 * Populates PubSub publisher Publishes messages downstream
-	 * 
-	 * @param publisher
-	 * @param msg
-	 * @throws GenericAPIException
 	 */
 	private void publishMessage(Publisher publisher, Message msg) throws Exception {
 
@@ -116,10 +108,7 @@ public class PublishMessage {
 		ApiFuture<String> future = publisher.publish(builder.build());
 		ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
 			public void onFailure(Throwable throwable) {
-				if (throwable instanceof ApiException) {
-					ApiException apiException = ((ApiException) throwable);
-					LOGGER.severe("Failed to publish message: " + apiException.getMessage());
-				}
+				LOGGER.severe("Failed to publish message: " + throwable.getMessage());
 			}
 
 			public void onSuccess(String msgId) {
@@ -130,25 +119,21 @@ public class PublishMessage {
 
 	/**
 	 * Creates PubSub publisher if one doesn't exist
-	 * 
-	 * @param topic
-	 * @return
-	 * @throws Exception
 	 */
 	private Publisher getPublisher(String topic) throws IOException {
-		if (!getPublishers().containsKey(topic)) {
-			LOGGER.info("Creating new publisher for: " + topic);
-			Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
-			getPublishers().put(topic, publisher);
-			return publisher;
+
+		if (getPublishers().containsKey(topic)) {
+			return getPublishers().get(topic);
 		}
-		return getPublishers().get(topic);
+		
+		LOGGER.info("Creating new publisher for: " + topic);
+		Publisher publisher = Publisher.newBuilder(ProjectTopicName.of(projectId, topic)).build();
+		getPublishers().put(topic, publisher);
+		return publisher;
 	}
 	
 	/**
 	 * Handle missing parameters in incoming requests
-	 * @param msg
-	 * @return
 	 */
 	private Response invalidRequest(String msg) {
 		return Response.status(Status.BAD_REQUEST)

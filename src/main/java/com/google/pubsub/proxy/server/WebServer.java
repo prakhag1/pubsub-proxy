@@ -20,6 +20,8 @@
  */
 package com.google.pubsub.proxy.server;
 
+import java.util.Optional;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -34,7 +36,9 @@ public class WebServer {
 		ServletHolder servletHolder = new ServletHolder(new ServletContainer(InjectResourcesUtils.injectResources()));
 		contextHandler.addServlet(servletHolder, "/*");
 
-		Server server = new Server(8080);
+		// Read the port from "PORT" environment variable
+		// Defaults to 8080 if nothing is set 
+		Server server = new Server(Integer.parseInt(Optional.ofNullable(System.getenv("PORT")).orElse("8080")));
 		server.setHandler(contextHandler);
 		server.start();
 		server.join();

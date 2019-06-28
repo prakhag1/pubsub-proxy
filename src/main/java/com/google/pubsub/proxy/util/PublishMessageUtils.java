@@ -14,7 +14,7 @@
 
 package com.google.pubsub.proxy.util;
 
-import java.util.LinkedHashMap;
+import java.text.ParseException;
 import java.util.Map;
 
 import com.google.protobuf.Timestamp;
@@ -24,31 +24,17 @@ public class PublishMessageUtils {
 	
 	/**
 	 * Returns timestamp from string
-	 * @param s
-	 * @return
-	 * @throws GenericAPIException
 	 */
-	public static Timestamp getTimeStamp(String s) throws Exception {
-		try {
-			return Timestamps.parse(s);
-		} catch (Exception ex) {
-			throw ex;
-		}
+	public static Timestamp getTimeStamp(String s) throws ParseException {
+		return Timestamps.parse(s);
 	}
 
 	/**
 	 * Attributes captured as generic object returned 
 	 * in the format understandable by PubSub
-	 * @param attributes
-	 * @return
-	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getAllAttributes(Object attributes) throws Exception {
-		try {
-			return (LinkedHashMap<String, String>) attributes;
-		} catch (Exception ex) {
-			throw ex;
-		}
+		return (Map<String, String>) attributes;
 	}
 }

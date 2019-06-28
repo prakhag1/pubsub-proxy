@@ -4,13 +4,8 @@ This is not an officially supported Google product.
 
 Copyright 2019 Google LLC
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
-
-https://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
 ## Introduction
-This repository provides implementation of a proxy service which enables client-side apps to publish messages to Google Cloud [Pub/Sub](https://cloud.google.com/pubsub/docs/overview). The proxy service:
+This repository provides sample implementation of a proxy service which enables client-side apps to publish messages to Google Cloud [Pub/Sub](https://cloud.google.com/pubsub/docs/overview). The proxy service:
 - Authenticates incoming end user requests. 
 - Forwards authenticated requests to Pub/Sub using appropriate [Cloud IAM](https://cloud.google.com/iam/docs/overview) permissions
 
@@ -23,16 +18,7 @@ The detailed steps to run this proxy on GCP is covered in the tutorial available
 - Cloud Endpoints
 - Container Registry
 
-## Request Flow
-Any request destined to Pub/Sub goes through Pub/Sub proxy. To identify the calling app that sends requests to the proxy, we will use OpenId Connect Tokens (OIDC). The Pub/Sub proxy makes use of [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/architecture-overview) to authenticate requests from users.
-
-The client sends a request to the Pub/Sub proxy which is intercepted by Cloud Endpoints. Cloud Endpoints validates the OIDC token before forwarding the request to Pub/Sub proxy. Upon receiving the request, Pub/Sub proxy creates an publish request and sends it to Cloud Pub/Sub. For all incoming requests, Cloud Pub/Sub needs to ensure if the caller has the right permissions to issue publish requests. The Pub/Sub proxy uses the [Compute Engine default service account](https://cloud.google.com/compute/docs/access/service-accounts#compute_engine_default_service_account) to authenticate itself with Cloud Pub/Sub.
-
-![Alt text](img/requestflow.png?raw=true)
-
 ## Local Deployment & Testing
-The local deployment of Pub/Sub proxy (discussed below) has a slight departure from the request flow discussed above. For local testing, Pub/Sub proxy is exposed as an independent entity and not via Cloud Endpoints. This means that the calls do not need to be carry an authentication token to validate the caller with Pub/Sub proxy. 
-
 For production grade deployments, refer to the [detailed solution post]().
 
 Clone repository:
