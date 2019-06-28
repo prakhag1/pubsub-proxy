@@ -15,7 +15,7 @@
 package com.google.pubsub.proxy.publish;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -45,7 +45,7 @@ import com.google.pubsub.v1.PubsubMessage.Builder;
 public class PublishMessage {
 
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
-	private ConcurrentHashMap<String, Publisher> publishers = new ConcurrentHashMap<>();
+	private Map<String, Publisher> publishers = new ConcurrentHashMap<String, Publisher>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 
 	
@@ -54,10 +54,10 @@ public class PublishMessage {
 	}
 
 	
-	@SuppressWarnings("unchecked")
-	public void setPublishers(HashMap<String, Publisher> publishers) {
-		this.publishers = (ConcurrentHashMap<String, Publisher>) publishers.clone();
+	public void setPublishers(Map<String, Publisher> publishers) {
+		this.publishers = Collections.unmodifiableMap(publishers);
 	}
+	
 	
 	/**
 	 * Entry point for POST /publish Enforces token validation

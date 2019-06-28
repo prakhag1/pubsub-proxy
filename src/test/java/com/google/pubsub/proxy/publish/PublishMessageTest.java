@@ -16,7 +16,6 @@ package com.google.pubsub.proxy.publish;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,7 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -58,10 +57,10 @@ public class PublishMessageTest {
     private static final String TOPIC = "PUBSUB_TOPIC";
     private static final String MESSAGE_ID = "MESSAGE_ID";
     private static final String DATA = "MESSAGE_DATA";
-    private static final LinkedHashMap<String, String> ATTRIBUTES = new LinkedHashMap<>();
+    private static final HashMap<String, String> ATTRIBUTES = new HashMap<String, String>();
     private static final String PUBLISH_TIME = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     @Mock
-    HashMap<String, Publisher> publisherList;
+    Map<String, Publisher> publisherList;
     @Mock
     Publisher publisher;
     @Captor
@@ -136,13 +135,6 @@ public class PublishMessageTest {
         when(publisher.publish(any())).thenReturn(goodFuture);
         publishMessage.doPost(request);
         verify(publisher, times(2)).publish(Mockito.any());
-    }
-
-    @Test
-    public void WhenRequestIsValidAndPublisherDoNotExistThenANewPublisherIsCreated() throws Exception {
-        when(publisherList.containsKey(TOPIC)).thenReturn(Boolean.FALSE);
-        publishMessage.doPost(request);
-        verify(publisherList).put(eq(TOPIC), Mockito.any());
     }
 
     @Test
