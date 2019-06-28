@@ -1,6 +1,0 @@
-com/google/pubsub/proxy/util/PublishMessageUtilsTest.class
-com/google/pubsub/proxy/server/WebServerTest.class
-com/google/pubsub/proxy/server/HealthCheckTest.class
-com/google/pubsub/proxy/publish/PublishMessageUnitTest.class
-com/google/pubsub/proxy/publish/PublishMessageUnitTest$SpyableFuture.class
-com/google/pubsub/proxy/server/WebServerTest$ThreadRunner.class
