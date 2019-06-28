@@ -80,12 +80,9 @@ To skip test cases, run:
 ```
 mvn clean compile assembly:assembly package -DskipTests
 ```
-Check whether GOOGLE_APPLICATION_CREDENTIALS is set properly. Without this variable, the application server will not start:
-```
-echo $GOOGLE_APPLICATION_CREDENTIALS
-```
 On a new terminal, start the proxy after changing to the directory where pubsub-proxy was cloned:
 ```
+export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/sa.json
 java -jar target/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar 
 ```
 Back on the original terminal, publish a message to Cloud Pub/Sub via proxy.
