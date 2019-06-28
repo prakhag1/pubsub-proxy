@@ -44,3 +44,6 @@ securityDefinitions:
     x-google-issuer: "https://accounts.google.com"
     x-google-jwks_uri: "https://www.googleapis.com/oauth2/v3/certs"
     x-google-audiences: "pubtest.endpoints.[PROJECT_ID].cloud.goog"
+x-google-endpoints:
+- name: "pubtest.endpoints.[PROJECT_ID].cloud.goog"
+  target: "[IP_ADDRESS]"

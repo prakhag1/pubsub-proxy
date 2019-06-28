@@ -26,3 +26,4 @@ spec:
   selector:
     app: "pubsub-proxy"
   type: "LoadBalancer"
+  loadBalancerIP: "[IP_ADDRESS]"
