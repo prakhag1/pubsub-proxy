@@ -14,6 +14,7 @@
 
 # https://docs.docker.com/engine/reference/builder/#dockerignore-file
 
-**
-!pom.xml
-!src
+target
+!target/*.jar
+!target/*classes/*
+!target/generated*

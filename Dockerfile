@@ -19,6 +19,7 @@ WORKDIR /tmp/
 RUN mvn clean compile assembly:assembly package -DskipTests=true
 
 FROM openjdk:8-jre
-COPY --from=MAVEN_TOOL_CHAIN /tmp/target /
+COPY --from=MAVEN_TOOL_CHAIN /tmp/target /target
 EXPOSE 8080
-CMD ["java", "-jar", "/pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar"]
+WORKDIR /target
+CMD ["java", "-jar", "pubsub-proxy-0.0.1-SNAPSHOT-jar-with-dependencies.jar"]
