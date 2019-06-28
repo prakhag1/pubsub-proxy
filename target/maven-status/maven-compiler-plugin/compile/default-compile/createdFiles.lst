@@ -1,8 +1,0 @@
-com/google/pubsub/proxy/publish/PublishMessage$1.class
-com/google/pubsub/proxy/server/WebServer.class
-com/google/pubsub/proxy/server/HealthCheck.class
-com/google/pubsub/proxy/publish/PublishMessage.class
-com/google/pubsub/proxy/util/InjectResourcesUtils.class
-com/google/pubsub/proxy/util/PublishMessageUtils.class
-com/google/pubsub/proxy/entities/Request.class
-com/google/pubsub/proxy/entities/Message.class
