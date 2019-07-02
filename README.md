@@ -79,37 +79,6 @@ curl -i -X POST localhost:8080/publish \
 ```
 On the terminal running the proxy, check the logs to verify if the message was successfully published to Pub/Sub.
 
-### Containerize Proxy
-Once the standalone proxy works, proceed to containerize the application for local testing.
-Build docker image:
-```
-docker build -t pubsub-proxy .
-```
-Check if the image was successfully created:
-```
-docker images | grep pubsub-proxy
-```
-Build a container using the docker image:
-```
-docker run -v $(pwd)/sa.json:/tmp/sa.json \
-   -d --rm --name pubsub-proxy \
-   -e "GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json" pubsub-proxy
-```
-Check if the container was successfully created:
-```
-docker ps | grep pubsub-proxy
-```
-Test proxy:
-```
-docker exec -it pubsub-proxy \
-   curl -i -X POST localhost:8080/publish \
-   -H "Content-Type: application/json" \
-   -d '{"topic": "'$TOPIC'", "messages": [ {"attributes": {"key1": "value1", "key2" : "value2"}, "data": "test data"}]}'
-```
-Check logs:
-```
-docker logs pubsub-proxy
-```
 ### Deploy Proxy on GKE
 Detailed steps to run this proxy on GCP is covered in the tutorial [here]().
 
@@ -117,8 +86,4 @@ Detailed steps to run this proxy on GCP is covered in the tutorial [here]().
 Remove the private key:
 ```
 rm -rf $SERVICE_ACCOUNT_DEST
-```
-Stop the running docker container:
-```
-docker stop pubsub-proxy
 ```
