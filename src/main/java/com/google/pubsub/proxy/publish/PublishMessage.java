@@ -60,7 +60,7 @@ public class PublishMessage {
 	}
 
 	
-	protected void setPublishers(Map<String, Publisher> publishers) {
+	void setPublishers(Map<String, Publisher> publishers) {
 		this.publishers = Collections.unmodifiableMap(publishers);
 	}
 	

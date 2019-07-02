@@ -42,14 +42,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.google.api.core.ApiFuture;
-import com.google.api.gax.grpc.GrpcStatusCode;
-import com.google.api.gax.rpc.ApiExceptionFactory;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.pubsub.proxy.entities.Message;
 import com.google.pubsub.proxy.entities.Request;
 import com.google.pubsub.v1.PubsubMessage;
-
-import io.grpc.Status;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PublishMessageTest {
@@ -70,8 +66,6 @@ public class PublishMessageTest {
     private Message message;
     private ApiFuture<String> goodFuture;
     private ApiFuture<String> badFuture;
-	@SuppressWarnings("unused")
-	private ApiFuture<String> badApiFuture;
 
     @Before
     public void setUp() {
@@ -100,7 +94,6 @@ public class PublishMessageTest {
     private void setupFutures() {
         goodFuture = getSuccessfulPublishFuture();
         badFuture = getFailedPublishFuture();
-        badApiFuture = getFailedAPIPublishFuture();
     }
 
     @After
@@ -192,12 +185,6 @@ public class PublishMessageTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private ApiFuture<String> getFailedPublishFuture() {
         SpyableFuture<String> future = new SpyableFuture(new Exception());
-        return spy(future);
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private ApiFuture<String> getFailedAPIPublishFuture() {
-        SpyableFuture<String> future = new SpyableFuture(ApiExceptionFactory.createException(new Exception(), GrpcStatusCode.of(Status.Code.INTERNAL), false));
         return spy(future);
     }
 
