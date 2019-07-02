@@ -66,7 +66,7 @@ public class WebServerTest {
     @Test(timeout = 60000)
     public void whenTheApplicationStartsJettyServerIsStarted() throws InterruptedException {
         HttpUriRequest request = new HttpGet("http://localhost:8080");
-        Boolean success = false;
+        boolean success = false;
         while(!success) {
             try {
                 HttpResponse response = HttpClientBuilder.create().build().execute(request);

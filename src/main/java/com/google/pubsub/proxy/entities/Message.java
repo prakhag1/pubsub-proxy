@@ -17,6 +17,9 @@ package com.google.pubsub.proxy.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Represents a message to be published to a Cloud Pub/Sub topic
+ */
 @JsonPropertyOrder({ "attributes", "data", "messageId", "publishTime" })
 	public class Message {
 

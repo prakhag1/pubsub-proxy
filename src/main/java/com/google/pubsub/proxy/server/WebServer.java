@@ -25,15 +25,25 @@ import java.util.Optional;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-import com.google.pubsub.proxy.util.InjectResourcesUtils;
+import com.google.pubsub.proxy.publish.PublishMessage;
 
 public class WebServer {
 	public static void main(String[] args) throws Exception {
 		ServletContextHandler contextHandler = new ServletContextHandler();
+		ResourceConfig resourceConfig = new ResourceConfig();
 		
-		ServletHolder servletHolder = new ServletHolder(new ServletContainer(InjectResourcesUtils.injectResources()));
+		// End-point resources
+		resourceConfig.register(new PublishMessage());
+		resourceConfig.register(new HealthCheck());
+
+		// Jackson - json to POJO
+		resourceConfig.register(JacksonFeature.class);
+
+		ServletHolder servletHolder = new ServletHolder(new ServletContainer(resourceConfig));
 		contextHandler.addServlet(servletHolder, "/*");
 
 		// Read the port from "PORT" environment variable
@@ -41,6 +51,6 @@ public class WebServer {
 		Server server = new Server(Integer.parseInt(Optional.ofNullable(System.getenv("PORT")).orElse("8080")));
 		server.setHandler(contextHandler);
 		server.start();
-		server.join();
+		server.join();		
 	}
 }

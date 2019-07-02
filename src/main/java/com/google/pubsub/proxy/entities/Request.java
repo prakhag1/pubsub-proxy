@@ -21,6 +21,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * Represents a request to publish one or more messages to Cloud Pub/Sub.
+ * 
  * Example user request json: 
  * { "topic": "test", "messages": [ { "attributes": {
  * "key1": "value1", "key2" : "value2" ... }, "data":
@@ -52,6 +54,6 @@ public class Request {
 
 	@JsonProperty("messages")
 	public void setMessages(List<Message> messages) {
-		this.messages = Collections.unmodifiableList(new ArrayList<Message>(messages));
+		this.messages = Collections.unmodifiableList(new ArrayList<>(messages));
 	}
 }

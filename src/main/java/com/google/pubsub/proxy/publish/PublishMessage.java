@@ -15,6 +15,7 @@
 package com.google.pubsub.proxy.publish;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,34 +35,38 @@ import com.google.cloud.ServiceOptions;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Timestamp;
+import com.google.protobuf.util.Timestamps;
 import com.google.pubsub.proxy.entities.Message;
 import com.google.pubsub.proxy.entities.Request;
-import com.google.pubsub.proxy.util.PublishMessageUtils;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PubsubMessage.Builder;
 
+/**
+ * Publishes messages to Cloud Pub/Sub
+ *
+ */
 @Path("/publish")
 public class PublishMessage {
 
 	private static final String projectId = ServiceOptions.getDefaultProjectId();
-	private Map<String, Publisher> publishers = new ConcurrentHashMap<String, Publisher>();
+	private Map<String, Publisher> publishers = new ConcurrentHashMap<>();
 	private static final Logger LOGGER = Logger.getLogger(PublishMessage.class.getName());
 
 	
-	public Map<String, Publisher> getPublishers() {
+	private Map<String, Publisher> getPublishers() {
 		return publishers;
 	}
 
 	
-	public void setPublishers(Map<String, Publisher> publishers) {
+	protected void setPublishers(Map<String, Publisher> publishers) {
 		this.publishers = Collections.unmodifiableMap(publishers);
 	}
 	
 	
 	/**
 	 * Entry point for POST /publish Enforces token validation
-	 * 
 	 * @param req - POJO translated user request
 	 */
 	@POST
@@ -99,10 +104,10 @@ public class PublishMessage {
 			builder.setMessageId(msg.getMessageId());
 		}
 		if (null != msg.getPublishTime()) {
-			builder.setPublishTime(PublishMessageUtils.getTimeStamp(msg.getPublishTime()));
+			builder.setPublishTime(getTimeStamp(msg.getPublishTime()));
 		}
 		if (null != msg.getAttributes()) {
-			builder.putAllAttributes(PublishMessageUtils.getAllAttributes(msg.getAttributes()));
+			builder.putAllAttributes(getAllAttributes(msg.getAttributes()));
 		}
 
 		ApiFuture<String> future = publisher.publish(builder.build());
@@ -140,5 +145,21 @@ public class PublishMessage {
 				.entity(msg)
 				.type(MediaType.APPLICATION_JSON)
 				.build();
+	}
+	
+	/**
+	 * Returns timestamp from string
+	 */
+	private Timestamp getTimeStamp(String s) throws ParseException {
+		return Timestamps.parse(s);
+	}
+
+	/**
+	 * Attributes captured as generic object returned 
+	 * in the format understandable by PubSub
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map<String, String> getAllAttributes(Object attributes) {
+		return (Map<String, String>) attributes;
 	}
 }

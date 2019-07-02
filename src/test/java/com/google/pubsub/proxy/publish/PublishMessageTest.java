@@ -57,7 +57,7 @@ public class PublishMessageTest {
     private static final String TOPIC = "PUBSUB_TOPIC";
     private static final String MESSAGE_ID = "MESSAGE_ID";
     private static final String DATA = "MESSAGE_DATA";
-    private static final HashMap<String, String> ATTRIBUTES = new HashMap<String, String>();
+    private static final HashMap<String, String> ATTRIBUTES = new HashMap<>();
     private static final String PUBLISH_TIME = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     @Mock
     Map<String, Publisher> publisherList;
@@ -70,6 +70,7 @@ public class PublishMessageTest {
     private Message message;
     private ApiFuture<String> goodFuture;
     private ApiFuture<String> badFuture;
+	@SuppressWarnings("unused")
 	private ApiFuture<String> badApiFuture;
 
     @Before
@@ -104,12 +105,6 @@ public class PublishMessageTest {
 
     @After
     public void tearDown() {
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void WhenNoRequestIsNotPresentThendoPostThrowsNPE() throws Exception {
-        publishMessage.doPost(null);
-
     }
 
     @Test
@@ -214,8 +209,7 @@ public class PublishMessageTest {
             this.value = value;
         }
 
-        @SuppressWarnings("hiding")
-		public <V> SpyableFuture(Exception exception) {
+		public SpyableFuture(Exception exception) {
             this.exception = exception;
         }
 
